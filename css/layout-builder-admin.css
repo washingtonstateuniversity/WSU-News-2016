@@ -1,0 +1,98 @@
+/* Staging area for loaded content */
+label[for="wsuwp-builder-content-hide"],
+.wsuwp-drag-drop #postdivrich,
+#wsuwp-builder-content,
+.wsuwp-builder-term-relation,
+#wsuwp-layout-builder-items .ttfmake-sortable-handle a,
+#wsuwp-layout-builder-items .wsuwp-layout-builder-item-body,
+.ttfmake-section .ui-sortable-helper .wsuwp-layout-builder-item-body,
+.ttfmake-builder-active .ttfmake-menu-list-item:nth-child(n+7):nth-child(-n+12),
+.wsuwp-drag-drop .ttfmake-menu-list-item:nth-child(n+2):nth-child(-n+7) {
+	display: none;
+}
+.wsuwp-drag-drop #wsuwp-builder-content,
+.wsuwp-drag-drop #ttfmake-builder {
+	display: block;
+}
+.wsuwp-layout-builder-terms {
+	max-height: 200px;
+	overflow: auto;
+	padding: 0 .9em;
+	border: 1px solid #ddd;
+	background-color: #fdfdfd;
+}
+.wsuwp-layout-builder-terms ul ul {
+	margin-left: 18px;
+}
+.wsuwp-builder-term-relation {
+	margin-bottom: 0;
+}
+.wsuwp-builder-term-relation input {
+	margin-left: .9em;
+}
+.wsuwp-builder-load-button-wrap {
+	margin-top: 1em;
+	text-align: right;
+	width: 100%;
+}
+#wsuwp-layout-builder-items {
+	float: none;
+	padding: 12px 0 0;
+	margin: 0;
+}
+#wsuwp-layout-builder-items:empty {
+	padding: 0;
+}
+.ttfmake-sortable-handle .wsuwp-builder-column-title {
+	box-sizing: border-box;
+	margin: 0;
+	overflow: hidden;
+	padding: 0 70px 0 1rem;
+	text-align: left;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	width: 100%;
+}
+#wsuwp-layout-builder-items .ttfmake-sortable-handle .wsuwp-builder-column-title {
+	padding: 0 1rem;
+}
+.wsuwp-spine-builder-column .layout-builder-placeholder {
+	border: 1px dotted #222;
+	height: 30px;
+}
+#wsuwp-layout-builder-items .wsuwp-layout-builder-item:last-child .ttfmake-sortable-handle,
+.ui-sortable-helper .ttfmake-sortable-handle,
+#ttfmake-stage .wsuwp-layout-builder-item .ttfmake-sortable-handle {
+	border-bottom: 1px solid #d9d9d9;
+}
+.ttfmake-section-body {
+	float: none;
+	margin: 0 auto;
+	max-width: 1030px;
+	overflow: hidden;
+}
+#ttfmake-stage .wsuwp-spine-builder-column {
+	background: content-box #f5f5f5;
+	margin: 0;
+	min-height: 30px;
+	padding: 0;
+}
+.ttfmake-section-open .wsuwp-spine-builder-column:before {
+	content: 'Drag an item here';
+	position: absolute;
+	line-height: 30px;
+	padding: 0 1rem;
+	opacity: 0.25;
+}
+#ttfmake-stage .wsuwp-layout-builder-item .wsuwp-layout-builder-item-body {
+	font-size: 'Open Sans', 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
+	padding: 12px;
+}
+#poststuff .wsuwp-layout-builder-item-body h2 {
+	font-size: 1.8rem;
+	font-weight: 700;
+	letter-spacing: 0;
+	line-height: 1.1em;
+	margin: 0;
+	padding: .5em 0 .2em 0;
+}
