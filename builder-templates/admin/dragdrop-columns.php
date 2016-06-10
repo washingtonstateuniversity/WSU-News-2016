@@ -65,7 +65,8 @@ $section_order  = ( ! empty( $ttfmake_section_data['data']['columns-order'] ) ) 
 				<?php if ( $post_id ) : ?>
 				<div id="wsuwp-layout-builder-item-<?php echo esc_html( $post_id ); ?>" class="wsuwp-layout-builder-item">
 						<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">
-						<a href="#" class="spine-builder-column-configure"><span>Configure this column</span></a>
+						<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>
+						<a href="#" class="ttfmake-builder-section-footer-link spine-builder-item-remove"><span>Remove</span></a>
 						<a href="#" class="wsuwp-column-toggle" title="Click to toggle"><div class="handlediv"></div></a>
 						<div class="wsuwp-builder-column-title"><?php echo get_the_title( esc_html( $post_id ) ); ?></div>
 					</div>

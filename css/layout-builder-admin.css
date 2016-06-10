@@ -1,7 +1,5 @@
 /* Staging area for loaded content */
 label[for="wsuwp-builder-content-hide"],
-.wsuwp-drag-drop #postdivrich,
-#wsuwp-builder-content,
 .wsuwp-builder-term-relation,
 #wsuwp-layout-builder-items .ttfmake-sortable-handle a,
 #wsuwp-layout-builder-items .wsuwp-layout-builder-item-body,
@@ -9,10 +7,6 @@ label[for="wsuwp-builder-content-hide"],
 .ttfmake-builder-active .ttfmake-menu-list-item:nth-child(n+7):nth-child(-n+12),
 .wsuwp-drag-drop .ttfmake-menu-list-item:nth-child(n+2):nth-child(-n+7) {
 	display: none;
-}
-.wsuwp-drag-drop #wsuwp-builder-content,
-.wsuwp-drag-drop #ttfmake-builder {
-	display: block;
 }
 .wsuwp-layout-builder-terms {
 	max-height: 200px;
@@ -55,6 +49,18 @@ label[for="wsuwp-builder-content-hide"],
 }
 #wsuwp-layout-builder-items .ttfmake-sortable-handle .wsuwp-builder-column-title {
 	padding: 0 1rem;
+}
+.spine-builder-item-remove {
+	right: 39px;
+}
+.spine-builder-item-remove:before {
+    content: "\f182";
+}
+.spine-builder-item-remove:hover {
+    color: #c60c30;
+}
+.wsuwp-layout-builder-item .spine-builder-column-configure {
+	right: 71px;
 }
 .wsuwp-spine-builder-column .layout-builder-placeholder {
 	border: 1px dotted #222;

@@ -18,7 +18,6 @@
 	/**
 	 * Use jQuery UI Sortable to add sorting functionality to layout builds.
 	 */
-	sortable_layout();
 	function sortable_layout() {
 		var item_column;
 		$('.wsuwp-spine-builder-column').sortable({
@@ -35,6 +34,7 @@
 					$(existing_item).appendTo(item_column).find('.wsuwp-layout-builder-item-body').css('display', '');
 				}
 				if (ui.item.parent('#wsuwp-layout-builder-items').length == 1) {
+					ui.item.find('.handlediv').removeClass('wsuwp-toggle-closed');
 					ui.item.find('.wsuwp-layout-builder-item-body').css('display', '');
 				}
 				process_sorted_data();
@@ -54,7 +54,8 @@
 		$.each(raw_data, function (index, val) {
 			data += '<div id="wsuwp-layout-builder-item-' + val.id + '" class="wsuwp-layout-builder-item">' +
 				'<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">' +
-					'<a href="#" class="spine-builder-column-configure"><span>Configure this column</span></a>' +
+					'<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>' +
+					'<a href="#" class="ttfmake-builder-section-footer-link spine-builder-item-remove"><span>Remove</span></a>' +
 					'<a href="#" class="wsuwp-column-toggle" title="Click to toggle"><div class="handlediv"></div></a>' +
 					'<div class="wsuwp-builder-column-title">' + val.title + '</div>' +
 				'</div>' +
@@ -150,18 +151,39 @@
 	});
 
 	$(document).ready(function () {
+		sortable_layout();
 		$('.wsuwp-layout-builder-terms input[type=checkbox]').triggerHandler('click');
 	});
 
-	// spine/inc/builder-custom/js/edit.page.js
+	// Display the builder and custom sections when the drag/drop builder template is selected.
 	$('#page_template').on('change', function () {
 		if ('template-dragdrop.php' === $(this).val()) {
 			$('body').addClass('wsuwp-drag-drop');
-			$('#postdivrich').css('display', '');
-			$('#ttfmake-builder').css('display', '');
+			$('#postdivrich').hide();
+			$('#ttfmake-builder').show();
+			$('#wsuwp-builder-content').show();
 		} else {
 			$('body').removeClass('wsuwp-drag-drop');
+			$('#wsuwp-builder-content').hide();
 		}
+	});
+
+	// Item removal handling.
+	$('#ttfmake-stage').on('click', '.spine-builder-item-remove', function (e) {
+		e.preventDefault();
+
+		// Confirm before removing the item.
+		if (false === window.confirm('Delete the item?')) {
+			return;
+		}
+
+		// We'll also need to remove the configuration modal input values (if we use any).
+		$(this).closest('.wsuwp-layout-builder-item').animate({
+			opacity: 'toggle',
+			height: 'toggle'
+		}, oneApp.options.closeSpeed, function () {
+			$(this).remove();
+		});
 	});
 
 }(jQuery, window));
