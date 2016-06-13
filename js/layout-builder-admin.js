@@ -141,26 +141,44 @@
 		});
 	});
 
-	// Taxonomy term options display.
+	// Taxonomy options display.
 	$('.wsuwp-layout-builder-terms').on('click', 'button, p', function () {
-		$(this).closest('.wsuwp-layout-builder-terms').toggleClass('closed');
+		$(this).closest('.wsuwp-layout-builder-terms').toggleClass('closed').
+			find('[type="search"]').val('').
+			next('ul').find('label').css('display', '');
 	});
+
 	$('.wsuwp-layout-builder-terms').on('click', 'input', function () {
 		$(this).closest('li').toggleClass('checked');
 	});
 
+	// Taxonomy terms quick search.
+	$('.wsuwp-layout-builder-terms').on('keyup', '[type="search"]', function () {
+		var	value = $(this).val(),
+			terms = $(this).closest('.wsuwp-layout-builder-terms').find('label');
+
+		if ( value.length > 0 ) {
+			terms.each(function () {
+				var term = $(this);
+				if (term.text().toLowerCase().indexOf(value.toLowerCase()) > 0) {
+					term.show();
+				} else {
+					term.hide();
+				}
+			});
+		} else {
+			terms.show();
+		}
+
+	});
+
 	// Show/hide the taxonomy relation options as appropriate.
-	$('.wsuwp-layout-builder-terms input[type=checkbox]').on('click', function () {
-		if (1 < $('.wsuwp-layout-builder-terms input[type=checkbox]:checked').length) {
+	$('.wsuwp-layout-builder-terms [type=checkbox]').on('click', function () {
+		if (1 < $('.wsuwp-layout-builder-terms [type=checkbox]:checked').length) {
 			$('.wsuwp-builder-term-relation').show();
 		} else {
 			$('.wsuwp-builder-term-relation').hide();
 		}
-	});
-
-	$(document).ready(function () {
-		sortable_layout();
-		$('.wsuwp-layout-builder-terms input[type=checkbox]').triggerHandler('click');
 	});
 
 	// Display the builder and custom sections when the drag/drop builder template is selected.
@@ -192,5 +210,10 @@
 		}, oneApp.options.closeSpeed, function () {
 			$(this).remove();
 		});
+	});
+
+	$(document).ready(function () {
+		sortable_layout();
+		$('.wsuwp-layout-builder-terms [type=checkbox]').triggerHandler('click');
 	});
 }(jQuery, window));

@@ -33,9 +33,15 @@ label[for="wsuwp-builder-content-hide"],
 	background-color: #fdfdfd;
     border: 1px solid #ddd;
 	border-top: none;
-	max-height: 200px;
+	max-height: 250px;
 	overflow: auto;
 	padding: 0 .9em;
+}
+.wsuwp-layout-builder-terms [type="search"] {
+	margin-top: 0.9rem;
+}
+.wsuwp-layout-builder-terms.closed [type="search"] {
+	display:none;
 }
 .wsuwp-layout-builder-terms.closed ul {
 	font-size: 0;
@@ -50,10 +56,10 @@ label[for="wsuwp-builder-content-hide"],
 	font-size: 13px;
 	line-height: 22px;
 }
-.wsuwp-layout-builder-terms.closed label {
+.closed label {
 	display: none;
 }
-.wsuwp-layout-builder-terms.closed .checked > label {
+.closed .checked > label {
 	display: inline;
 	opacity: 0.5;
 	padding-right: 0.5rem;
@@ -81,6 +87,7 @@ label[for="wsuwp-builder-content-hide"],
 }
 .wsuwp-builder-term-relation {
 	margin-bottom: 0;
+	margin-left: 0.9em;
 }
 .wsuwp-builder-term-relation input {
 	margin-left: .9em;

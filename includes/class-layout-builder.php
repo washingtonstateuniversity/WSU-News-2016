@@ -253,6 +253,7 @@ class WSU_News_Layout_Builder {
 				<p><?php echo $taxonomy->label; ?></p>
 
 				<div>
+					<input type="search" value="" placeholder="Quick search" autocomplete="off" class="widefat">
 					<ul class="categorychecklist">
 					<?php
 					wp_terms_checklist( null, array(
@@ -266,9 +267,9 @@ class WSU_News_Layout_Builder {
 			</div>
 			<?php
 		} ?>
-		<p class="wsuwp-builder-term-relation">Get posts that contain<br />
-			<input type="radio" name="wsuwp_layout_builder_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?> />Any<br />
-			<input type="radio" name="wsuwp_layout_builder_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/>All<br />
+		<p class="wsuwp-builder-term-relation">Get posts with<br />
+			<input type="radio" name="wsuwp_layout_builder_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?> />any<br />
+			<input type="radio" name="wsuwp_layout_builder_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/>all<br />
 			of the selected terms</p>
 		<div class="wsuwp-builder-load-button-wrap">
 			<input type="button" value="Load Items" id="wsuwp-builder-load-items" class="button button-large button-secondary" />
