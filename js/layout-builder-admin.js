@@ -108,10 +108,10 @@
 
 		var category = $('[name="wsuwp_layout_builder_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
 			tag = $('[name="wsuwp_layout_builder_post_tag_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			u_category = $('#wsuwp_university_category-terms').val(),
-			location = $('#wsuwp_university_location-terms').val(),
-			organization = $('#wsuwp_university_org-terms').val(),
-			relation = $('input[name="wsuwp-builder-term-relation"]:checked').val();
+			u_category = $('[name="wsuwp_layout_builder_wsuwp_university_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			location = $('[name="wsuwp_layout_builder_wsuwp_university_location_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			organization = $('[name="wsuwp_layout_builder_wsuwp_university_org_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			relation = $('[name="wsuwp_layout_builder_term_relation"]:checked').val();
 
 		// Cache the issue build area for future use.
 		var data = {
@@ -139,6 +139,14 @@
 		$oneApp.on('afterSectionViewAdded', function () {
 			sortable_layout();
 		});
+	});
+
+	// Taxonomy term options display.
+	$('.wsuwp-layout-builder-terms').on('click', 'button, p', function () {
+		$(this).closest('.wsuwp-layout-builder-terms').toggleClass('closed');
+	});
+	$('.wsuwp-layout-builder-terms').on('click', 'input', function () {
+		$(this).closest('li').toggleClass('checked');
 	});
 
 	// Show/hide the taxonomy relation options as appropriate.
@@ -185,5 +193,4 @@
 			$(this).remove();
 		});
 	});
-
 }(jQuery, window));

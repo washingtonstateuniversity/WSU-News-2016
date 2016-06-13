@@ -224,6 +224,10 @@ class WSU_News_Layout_Builder {
 
 		$staged_items = '';
 
+		$relation_meta = get_post_meta( $post->ID, '_wsuwp_layout_builder_term_relation', true );
+
+		$relation = ( $relation_meta ) ? $relation_meta : 'OR';
+
 		// If this page already has content loaded, we want to make it available to the JS.
 		if ( $post_ids = get_post_meta( $post->ID, '_wsuwp_layout_builder_staged_items', true ) ) {
 			$localized_data['items'] = $this->_build_layout_items_response( $post_ids );
@@ -236,27 +240,35 @@ class WSU_News_Layout_Builder {
 			$selected_terms = '';
 
 			if ( $terms = get_post_meta( $post->ID, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms', true ) ) {
-				//$selected_terms = implode( ',', $terms );
 				$selected_terms = $terms;
 			}
 			?>
-			<p><strong><?php echo $taxonomy->label; ?></strong></p>
-			<div class="wsuwp-layout-builder-terms">
-				<ul class="categorychecklist">
-				<?php
-				wp_terms_checklist( null, array(
-					'selected_cats' => $selected_terms,
-					'walker'        => new WSUWP_Layout_Builder_Taxonomy_Options_Walker(),
-					'taxonomy'      => $taxonomy->name,
-				) );
-				?>
-				</ul>
+
+			<div class="wsuwp-layout-builder-terms closed">
+
+				<button type="button" class="handlediv button-link" aria-expanded="true">
+					<span class="screen-reader-text">Toggle panel: <?php echo $taxonomy->label; ?> terms</span>
+					<span class="toggle-indicator" aria-hidden="true"></span>
+				</button>
+				<p><?php echo $taxonomy->label; ?></p>
+
+				<div>
+					<ul class="categorychecklist">
+					<?php
+					wp_terms_checklist( null, array(
+						'selected_cats' => $selected_terms,
+						'walker'        => new WSUWP_Layout_Builder_Taxonomy_Options_Walker(),
+						'taxonomy'      => $taxonomy->name,
+					) );
+					?>
+					</ul>
+				</div>
 			</div>
 			<?php
 		} ?>
 		<p class="wsuwp-builder-term-relation">Get posts that contain<br />
-			<input type="radio" name="wsuwp-builder-term-relation" value="OR" />Any<br />
-			<input type="radio" name="wsuwp-builder-term-relation" value="AND" />All<br />
+			<input type="radio" name="wsuwp_layout_builder_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?> />Any<br />
+			<input type="radio" name="wsuwp_layout_builder_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/>All<br />
 			of the selected terms</p>
 		<div class="wsuwp-builder-load-button-wrap">
 			<input type="button" value="Load Items" id="wsuwp-builder-load-items" class="button button-large button-secondary" />
@@ -299,12 +311,19 @@ class WSU_News_Layout_Builder {
 		}
 
 		foreach ( $this->post_taxonomies as $taxonomy ) {
-			if ( ! empty( $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms'] ) ) {
+			if ( ! empty( $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms']) ) {
 				$selected_terms = array_map( 'absint', $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms'] );
 				update_post_meta( $post_id, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms', $selected_terms );
 			} else {
 				delete_post_meta( $post_id, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms' );
 			}
+		}
+
+		$relation = $_POST['wsuwp_layout_builder_term_relation'];
+		if ( isset( $relation ) && ( 'OR' === $relation || 'AND' === $relation ) ) {
+			update_post_meta( $post_id, '_wsuwp_layout_builder_term_relation', $relation );
+		} else {
+			delete_post_meta( $post_id, '_wsuwp_layout_builder_term_relation' );
 		}
 	}
 
@@ -449,7 +468,7 @@ class WSU_News_Layout_Builder {
 			$organization = array();
 		}
 
-		if ( isset( $_POST['relation'] ) && ( 'OR' === $_POST['relation'] || 'AND' === $_POST['relation'] )  ) {
+		if ( isset( $_POST['relation'] ) && ( 'OR' === $_POST['relation'] || 'AND' === $_POST['relation'] ) ) {
 			$relation = $_POST['relation'];
 		} else {
 			$relation = false;
