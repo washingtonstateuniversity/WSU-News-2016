@@ -8,9 +8,14 @@ class WSU_News_Layout_Builder {
 	private static $instance;
 
 	/**
-	 * @var array Holds all taxonomies registered for posts.
+	 * @var array Holds all public post types.
 	 */
-	public $post_taxonomies = array();
+	public $post_types = array();
+
+	/**
+	 * @var array Holds all taxonomies registered for the post types in the `post_types` array.
+	 */
+	public $post_types_taxonomies = array();
 
 	/**
 	 * Maintain and return the one instance and initiate hooks when
@@ -40,7 +45,8 @@ class WSU_News_Layout_Builder {
 	 */
 	public function setup_hooks() {
 		add_filter( 'make_is_builder_page', array( $this, 'make_is_builder_page'), 10, 2 );
-		add_action( 'admin_init', array( $this, 'set_post_taxonomies' ) );
+		add_action( 'admin_init', array( $this, 'set_post_types' ) );
+		add_action( 'admin_init', array( $this, 'set_post_types_taxonomies' ) );
 		add_action( 'admin_init', array( $this, 'custom_builder_sections' ) );
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10 );
 		add_action( 'add_meta_boxes_page', array( $this, 'add_meta_boxes' ), 10 );
@@ -64,12 +70,24 @@ class WSU_News_Layout_Builder {
 	}
 
 	/**
-	 * Set the `post_taxonomies` value via `get_object_taxonomies`.
+	 * Set the `post_types` value via `get_post_types`.
+	 * Unset 'attachment' as we likely won't be using it.
+	 */
+	public function set_post_types() {
+		$args = array(
+			'public' => true,
+		);
+		$this->post_types = get_post_types( $args, 'names', 'and' );
+		unset($this->post_types['attachment']);
+	}
+
+	/**
+	 * Set the `post_types_taxonomies` value via `get_object_taxonomies`.
 	 * Unset 'post_format' as we likely won't be using it.
 	 */
-	public function set_post_taxonomies() {
-		$this->post_taxonomies = get_object_taxonomies( 'post', 'object' );
-		unset($this->post_taxonomies['post_format']);
+	public function set_post_types_taxonomies() {
+		$this->post_types_taxonomies = get_object_taxonomies( $this->post_types, 'object' );
+		unset($this->post_types_taxonomies['post_format']);
 	}
 
 	/**
@@ -221,58 +239,118 @@ class WSU_News_Layout_Builder {
 		wp_nonce_field( 'save-wsuwp-layout-build', '_wsuwp_layout_build_nonce' );
 
 		$localized_data = array( 'post_id' => $post->ID );
-
 		$staged_items = '';
-
-		$relation_meta = get_post_meta( $post->ID, '_wsuwp_layout_builder_term_relation', true );
-
-		$relation = ( $relation_meta ) ? $relation_meta : 'OR';
+		$button_value = 'Load Items';
 
 		// If this page already has content loaded, we want to make it available to the JS.
 		if ( $post_ids = get_post_meta( $post->ID, '_wsuwp_layout_builder_staged_items', true ) ) {
 			$localized_data['items'] = $this->_build_layout_items_response( $post_ids );
 			$staged_items = implode( ',', $post_ids );
+			$button_value = 'Refresh Items';
 		}
 
 		wp_localize_script( 'wsuwp-layout-builder', 'wsuwp_layout_build', $localized_data );
 
-		foreach ( $this->post_taxonomies as $taxonomy ) {
+		?>
+		<div class="wsuwp-blocks-content-options post-type">
+			<?php // Set up variables for the post types options.
+			$post_types_display = 'Posts';
+			if ( $post_type_meta = get_post_meta( $post->ID, '_wsuwp_blocks_post_type', true ) ) {
+				$post_types_display = array();
+				foreach ( $post_type_meta as $post_type ) {
+					$post_type = get_post_type_object( esc_html( $post_type ) );
+					$post_types_display[] = $post_type->labels->name;
+				}
+				$post_types_display = implode( ', ', $post_types_display);
+			} else {
+				$post_type_meta = array( 'post' );
+			}
+			?>
+			Get: <span class="display"><?php echo $post_types_display; ?></span>
+			<a href="#" class="edit hide-if-no-js">
+				<span aria-hidden="true">Edit</span> <span class="screen-reader-text">Edit post types</span>
+			</a>
+			<div class="hide-if-js">
+				<?php foreach ( $this->post_types as $post_type ) { ?>
+				<?php $post_type = get_post_type_object( $post_type ); ?>
+				<?php $checked = ( in_array( $post_type->name, $post_type_meta ) ) ? ' checked="checked"': ''; ?>
+				<label>
+					<input type="checkbox" name="wsuwp_blocks_post_type[]" value="<?php echo $post_type->name; ?>"<?php echo $checked; ?>/> <?php echo $post_type->labels->name; ?>
+				</label><br />
+				<?php } ?>
+				<p>
+					<a href="#" class="hide-if-no-js button">OK</a>
+					<a href="#" class="hide-if-no-js button-cancel">Cancel</a>
+				</p>
+			</div>
+
+		</div>
+
+		<div class="wsuwp-blocks-content-options tax-query-relation">
+			<?php // Set up variables for the taxonomy query relation options.
+			$relation_meta = get_post_meta( $post->ID, '_wsuwp_layout_builder_term_relation', true );
+			$relation = ( $relation_meta ) ? $relation_meta : 'OR';
+			?>
+			With: <span class="display"><?php echo ( 'OR' === $relation ) ? 'Any of the following' : 'All of the following'; ?></span>
+			<a href="#" class="edit hide-if-no-js">
+				<span aria-hidden="true">Edit</span> <span class="screen-reader-text">Edit taxonomy query relation</span>
+			</a>
+			<div class="hide-if-js">
+				<label>
+					<input type="radio" name="wsuwp_layout_builder_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?>/> Any of the following
+				</label><br />
+				<label>
+					<input type="radio" name="wsuwp_layout_builder_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/> All of the following
+				</label><br />
+				<p>
+					<a href="#" class="hide-if-no-js button">OK</a>
+					<a href="#" class="hide-if-no-js button-cancel">Cancel</a>
+				</p>
+			</div>
+		</div>
+
+		<?php // Set up the taxonomy options.
+		foreach ( $this->post_types_taxonomies as $taxonomy ) {
 			$selected_terms = '';
+			$display_terms  = 'None';
 
 			if ( $terms = get_post_meta( $post->ID, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms', true ) ) {
 				$selected_terms = $terms;
+				$display_terms = array();
+				foreach ( $terms as $term_id ) {
+					$term = get_term( $term_id, $taxonomy->name );
+					$display_terms[] = $term->name;
+				}
+				$display_terms = implode( ', ', $display_terms);
 			}
 			?>
-
-			<div class="wsuwp-layout-builder-terms closed">
-
-				<button type="button" class="handlediv button-link" aria-expanded="true">
-					<span class="screen-reader-text">Toggle panel: <?php echo $taxonomy->label; ?> terms</span>
-					<span class="toggle-indicator" aria-hidden="true"></span>
-				</button>
-				<p><?php echo $taxonomy->label; ?></p>
-
-				<div>
-					<input type="search" value="" placeholder="Quick search" autocomplete="off" class="widefat">
-					<ul class="categorychecklist">
-					<?php
-					wp_terms_checklist( null, array(
-						'selected_cats' => $selected_terms,
-						'walker'        => new WSUWP_Layout_Builder_Taxonomy_Options_Walker(),
-						'taxonomy'      => $taxonomy->name,
-					) );
-					?>
-					</ul>
+			<div class="wsuwp-blocks-content-options <?php echo $taxonomy->name; ?>-terms">
+				<?php echo $taxonomy->label; ?>: <span class="display"><?php echo $display_terms; ?></span>
+				<a href="#" class="edit hide-if-no-js">
+					<span aria-hidden="true">Edit</span> <span class="screen-reader-text">Edit <?php echo $taxonomy->name; ?> terms</span>
+				</a>
+				<div class="hide-if-js">
+					<input type="search" value="" placeholder="Search <?php echo $taxonomy->labels->name; ?>" autocomplete="off" class="wsuwp-blocks-taxonomy-terms-search widefat">
+					<div class="wsuwp-blocks-taxonomy-terms">
+						<ul class="categorychecklist">
+						<?php
+						wp_terms_checklist( null, array(
+							'selected_cats' => $selected_terms,
+							'walker'        => new WSUWP_Layout_Builder_Taxonomy_Options_Walker(),
+							'taxonomy'      => $taxonomy->name,
+						) );
+						?>
+						</ul>
+					</div>
+					<p>
+						<a href="#" class="hide-if-no-js button">OK</a>
+						<a href="#" class="hide-if-no-js button-cancel">Cancel</a>
+					</p>
 				</div>
 			</div>
-			<?php
-		} ?>
-		<p class="wsuwp-builder-term-relation">Get posts with<br />
-			<input type="radio" name="wsuwp_layout_builder_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?> />any<br />
-			<input type="radio" name="wsuwp_layout_builder_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/>all<br />
-			of the selected terms</p>
+		<?php } ?>
 		<div class="wsuwp-builder-load-button-wrap">
-			<input type="button" value="Load Items" id="wsuwp-builder-load-items" class="button button-large button-secondary" />
+			<input type="button" value="<?php echo $button_value; ?>" id="wsuwp-builder-load-items" class="button button-large button-secondary" />
 		</div>
 		<div id="wsuwp-layout-builder-items" class="wsuwp-spine-builder-column"></div>
 		<input type="hidden" id="wsuwp-layout-builder-staged-items" name="wsuwp_layout_builder_staged_items" value="<?php echo esc_attr( $staged_items ); ?>" />
@@ -311,7 +389,14 @@ class WSU_News_Layout_Builder {
 			delete_post_meta( $post_id, '_wsuwp_layout_builder_staged_items' );
 		}
 
-		foreach ( $this->post_taxonomies as $taxonomy ) {
+		if ( ! empty( $_POST['wsuwp_blocks_post_type']) ) {
+			$selected_post_types = array_intersect( $_POST['wsuwp_blocks_post_type'], $this->post_types );
+			update_post_meta( $post_id, '_wsuwp_blocks_post_type', $selected_post_types );
+		} else {
+			delete_post_meta( $post_id, '_wsuwp_blocks_post_type' );
+		}
+
+		foreach ( $this->post_types_taxonomies as $taxonomy ) {
 			if ( ! empty( $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms']) ) {
 				$selected_terms = array_map( 'absint', $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms'] );
 				update_post_meta( $post_id, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms', $selected_terms );
@@ -332,18 +417,19 @@ class WSU_News_Layout_Builder {
 	 * Build the list of content items based on the selected options.
 	 *
 	 * @param array         $post_ids    List of specific post IDs to include. Defaults to an empty array.
+	 * @param array         $post_type   Post types to query. Defaults to an array containing 'post'.
 	 * @param array         $category    Category terms to query. Defaults to an empty array.
 	 * @param array         $tag         Tag terms to query. Defaults to an empty array.
 	 * @param array         $u_category  University Category terms to query. Defaults to an empty array.
 	 * @param array         $location    University Location terms to query. Defaults to an empty array.
 	 * @param array         $org         University Organization terms to query. Defaults to an empty array.
-	 * @param null|string   $relation    Taxonomy query relation. Null indicates none.
+	 * @param null|string   $relation    Taxonomy query relation. Defaults to 'OR'.
 	 *
 	 * @return array Containing information on each issue article.
 	 */
-	private function _build_layout_items_response( $post_ids = array(), $category = array(), $tag = array(), $u_category = array(), $location = array(), $org = array(), $relation = null ) {
+	private function _build_layout_items_response( $post_ids = array(), $post_type = array('post'), $category = array(), $tag = array(), $u_category = array(), $location = array(), $org = array(), $relation = 'OR' ) {
 		$query_args = array(
-			'post_type'      => 'post',
+			'post_type'      => $post_type,
 			'posts_per_page' => 10,
 		);
 
@@ -433,49 +519,55 @@ class WSU_News_Layout_Builder {
 			die();
 		}
 
+		$post_ids = array();
+
 		if ( isset( $_POST['post_ids'] ) ) {
 			$post_ids = explode( ',', $_POST['post_ids'] );
-		} else {
-			$post_ids = array();
 		}
+
+		$post_type = array();
+
+		if ( isset( $_POST['post_type'] ) ) {
+			$post_type = array_intersect( $_POST['post_type'], $this->post_types );
+		}
+
+		$category = array();
 
 		if ( isset( $_POST['category'] ) ) {
 			$category = array_map( 'absint', $_POST['category'] );
-		} else {
-			$category = array();
 		}
+
+		$tag = array();
 
 		if ( isset( $_POST['tag'] ) ) {
 			$tag = array_map( 'absint', $_POST['tag'] );
-		} else {
-			$tag = array();
 		}
+
+		$u_category = array();
 
 		if ( isset( $_POST['u_category'] ) ) {
 			$u_category = array_map( 'absint', $_POST['u_category'] );
-		} else {
-			$u_category = array();
 		}
+
+		$location = array();
 
 		if ( isset( $_POST['location'] ) ) {
 			$location = array_map( 'absint', $_POST['location'] );
-		} else {
-			$location = array();
 		}
+
+		$organization = array();
 
 		if ( isset( $_POST['organization'] ) ) {
 			$organization = array_map( 'absint', $_POST['organization'] );
-		} else {
-			$organization = array();
 		}
+
+		$relation = 'OR';
 
 		if ( isset( $_POST['relation'] ) && ( 'OR' === $_POST['relation'] || 'AND' === $_POST['relation'] ) ) {
 			$relation = $_POST['relation'];
-		} else {
-			$relation = false;
 		}
 
-		echo json_encode( $this->_build_layout_items_response( $post_ids, $category, $tag, $u_category, $location, $organization, $relation ) );
+		echo json_encode( $this->_build_layout_items_response( $post_ids, $post_type, $category, $tag, $u_category, $location, $organization, $relation ) );
 
 		exit();
 	}

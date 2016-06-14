@@ -106,7 +106,8 @@
 	$('#wsuwp-builder-load-items').on('click', function (e) {
 		e.preventDefault();
 
-		var category = $('[name="wsuwp_layout_builder_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
+		var post_type = $('[name="wsuwp_blocks_post_type[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			category = $('[name="wsuwp_layout_builder_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
 			tag = $('[name="wsuwp_layout_builder_post_tag_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
 			u_category = $('[name="wsuwp_layout_builder_wsuwp_university_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
 			location = $('[name="wsuwp_layout_builder_wsuwp_university_location_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
@@ -116,13 +117,19 @@
 		// Cache the issue build area for future use.
 		var data = {
 			action: 'set_layout_builder_items',
+			post_type: post_type,
 			category: category,
 			tag: tag,
 			u_category: u_category,
 			location: location,
-			organizatoin: organization,
+			organization: organization,
 			relation: relation,
 		};
+
+		// At least one post type needs to be selected.
+		if ( 0 === $('[name="wsuwp_blocks_post_type[]"]:checked').length ) {
+			return;
+		}
 
 		// Make the ajax call
 		$.post(window.ajaxurl, data, function (response) {
@@ -132,6 +139,11 @@
 			load_layout_build_items(response_data);
 			process_sorted_data();
 		});
+
+		// Change the button value.
+		if ('Load Items' === $(this).val()) {
+			$(this).val('Refresh Items');
+		}
 	});
 
 	// Make sure newly-added Page Builder elements are made sortable.
@@ -141,25 +153,67 @@
 		});
 	});
 
-	// Taxonomy options display.
-	$('.wsuwp-layout-builder-terms').on('click', 'button, p', function () {
-		$(this).closest('.wsuwp-layout-builder-terms').toggleClass('closed').
-			find('[type="search"]').val('').
-			next('ul').find('label').css('display', '');
+	// 'Publish block'-like interface handling.
+	$('.wsuwp-blocks-content-options').on('click', 'a', function (e) {
+		e.preventDefault();
+
+		var link = $(this);
+
+		if ( link.hasClass('edit') ) {
+			link.hide().next('div').slideDown('fast');
+		} else {
+			var section = link.closest('.wsuwp-blocks-content-options'),
+				display = section.find('.display'),
+				options = link.closest('div');
+
+			if ( link.hasClass('button') ) {
+				var checked = options.find(':checked').map(function () { return $.trim($(this).closest('label').text()); }).get(),
+					text    = checked.length ? checked.join(', ') : 'None';
+
+				if ( section.hasClass('post-type') && 0 === options.find(':checked').length ) {
+					return;
+				}
+
+				display.text(text);
+			} else if ( link.hasClass('button-cancel') ) {
+				var checked = display.text().split(', ');
+
+				options.find(':checked').attr('checked', false);
+
+				$.each(checked, function (i, val) {
+					options.find('label').filter(function () {
+						return $(this).text() === ' ' + val;
+					}).find('input').attr('checked', true).triggerHandler('change');
+				});
+			}
+
+			link.closest('div').slideUp('fast').prev('.edit').show();
+
+		}
 	});
 
-	$('.wsuwp-layout-builder-terms').on('click', 'input', function () {
-		$(this).closest('li').toggleClass('checked');
+	// Let the user know that at least one post type option needs to be selected.
+	$('[name="wsuwp_blocks_post_type[]"]').on('change', function () {
+		var container = $(this).closest('div');
+
+		if ( 0 === $('[name="wsuwp_blocks_post_type[]"]:checked').length ) {
+			if ( 0 === container.find('.notice-warning').length ) {
+				container.find('p').before('<p class="notice notice-warning">Please select at least one option</p>');
+			}
+		} else {
+			container.find('.notice-warning').remove();
+		}
 	});
 
 	// Taxonomy terms quick search.
-	$('.wsuwp-layout-builder-terms').on('keyup', '[type="search"]', function () {
+	$('.wsuwp-blocks-taxonomy-terms-search').on('keyup change', function () {
 		var	value = $(this).val(),
-			terms = $(this).closest('.wsuwp-layout-builder-terms').find('label');
+			terms = $(this).next('.wsuwp-blocks-taxonomy-terms').find('label'); // Could add `:has(:not(:checked))` to preserve checked options.
 
 		if ( value.length > 0 ) {
 			terms.each(function () {
 				var term = $(this);
+
 				if (term.text().toLowerCase().indexOf(value.toLowerCase()) > 0) {
 					term.show();
 				} else {
@@ -170,15 +224,6 @@
 			terms.show();
 		}
 
-	});
-
-	// Show/hide the taxonomy relation options as appropriate.
-	$('.wsuwp-layout-builder-terms [type=checkbox]').on('click', function () {
-		if (1 < $('.wsuwp-layout-builder-terms [type=checkbox]:checked').length) {
-			$('.wsuwp-builder-term-relation').show();
-		} else {
-			$('.wsuwp-builder-term-relation').hide();
-		}
 	});
 
 	// Display the builder and custom sections when the drag/drop builder template is selected.
@@ -214,6 +259,5 @@
 
 	$(document).ready(function () {
 		sortable_layout();
-		$('.wsuwp-layout-builder-terms [type=checkbox]').triggerHandler('click');
 	});
 }(jQuery, window));
