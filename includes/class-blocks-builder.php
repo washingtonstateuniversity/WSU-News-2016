@@ -462,6 +462,8 @@ class WSU_News_Blocks_Builder {
 	 * @return array Containing information on each issue article.
 	 */
 	private function _build_layout_items_response( $post_ids = array(), $post_type = array('post'), $relation = 'OR', $category = array(), $tag = array(), $u_category = array(), $location = array(), $org = array() ) {
+		global $post;
+
 		$query_args = array(
 			'post_type'      => $post_type,
 			'posts_per_page' => 10,
@@ -531,16 +533,21 @@ class WSU_News_Blocks_Builder {
 			}
 		}
 
+		$blocks_page = $post;
 		$items = array();
 		$query = get_posts( $query_args );
+
 		foreach ( $query as $post ) {
+			setup_postdata( $post );
 			$items[] = array(
 				'id'      => $post->ID,
-				'title'   => $post->post_title,
-				'excerpt' => $post->post_excerpt,
+				'title'   => get_the_title(),
+				'excerpt' =>  wpautop( get_the_excerpt() ),
 			);
 		}
+
 		wp_reset_postdata();
+		$post = $blocks_page;
 
 		return $items;
 	}

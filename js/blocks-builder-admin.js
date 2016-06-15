@@ -66,7 +66,7 @@
 					'<div class="wsuwp-builder-column-title">' + val.title + '</div>' +
 				'</div>' +
 				'<div class="wsuwp-blocks-item-body wsuwp-column-content">' +
-					'<h2>' + val.title + '</h2>' +
+					'<h2><a href="#">' + val.title + '</a></h2>' +
 					'<div class="wsuwp-blocks-item-excerpt">' + val.excerpt + '</div>' +
 				'</div>' +
 			'</div>';

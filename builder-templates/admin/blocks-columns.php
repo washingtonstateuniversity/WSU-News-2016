@@ -2,7 +2,7 @@
 
 spine_load_section_header();
 
-global $ttfmake_section_data, $ttfmake_is_js_template;
+global $ttfmake_section_data, $ttfmake_is_js_template, $post;
 
 if ( in_array( $ttfmake_section_data['section']['id'], array( 'wsuwpblockshalves', 'wsuwpblockssidebarright', 'wsuwpblockssidebarleft' ) ) ) {
 	$wsuwp_range = 2;
@@ -14,8 +14,9 @@ if ( in_array( $ttfmake_section_data['section']['id'], array( 'wsuwpblockshalves
 	$wsuwp_range = 1;
 }
 
-$section_name   = ttfmake_get_section_name( $ttfmake_section_data, $ttfmake_is_js_template );
-$section_order  = ( ! empty( $ttfmake_section_data['data']['columns-order'] ) ) ? $ttfmake_section_data['data']['columns-order'] : range( 1, $wsuwp_range );
+$section_name  = ttfmake_get_section_name( $ttfmake_section_data, $ttfmake_is_js_template );
+$section_order = ( ! empty( $ttfmake_section_data['data']['columns-order'] ) ) ? $ttfmake_section_data['data']['columns-order'] : range( 1, $wsuwp_range );
+$blocks_page   = $post;
 
 ?>
 	<div class="wsuwp-spine-blocks-stage">
@@ -52,18 +53,22 @@ $section_order  = ( ! empty( $ttfmake_section_data['data']['columns-order'] ) ) 
 					</div>
 				</div>
 				<?php if ( $post_id ) : ?>
-				<div id="wsuwp-blocks-item-<?php echo esc_html( $post_id ); ?>" class="wsuwp-blocks-item">
-						<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">
-						<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>
-						<a href="#" class="ttfmake-builder-section-footer-link blocks-item-remove"><span>Remove</span></a>
-						<a href="#" class="wsuwp-column-toggle" title="Click to toggle"><div class="handlediv"></div></a>
-						<div class="wsuwp-builder-column-title"><?php echo get_the_title( esc_html( $post_id ) ); ?></div>
+					<?php
+					$post = get_post( $post_id );
+					setup_postdata( $post );
+					?>
+					<div id="wsuwp-blocks-item-<?php echo esc_html( $post_id ); ?>" class="wsuwp-blocks-item">
+							<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">
+							<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>
+							<a href="#" class="ttfmake-builder-section-footer-link blocks-item-remove"><span>Remove</span></a>
+							<a href="#" class="wsuwp-column-toggle" title="Click to toggle"><div class="handlediv"></div></a>
+							<div class="wsuwp-builder-column-title"><?php the_title(); ?></div>
+						</div>
+						<div class="wsuwp-blocks-item-body wsuwp-column-content">
+							<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
+							<div class="wsuwp-blocks-item-excerpt"><?php the_excerpt(); ?></div>
+						</div>
 					</div>
-					<div class="wsuwp-blocks-item-body wsuwp-column-content">
-						<h2><?php echo get_the_title( esc_html( $post_id ) ); ?></h2>
-						<div class="wsuwp-blocks-item-excerpt"><?php echo get_the_excerpt( esc_html( $post_id ) ); ?></div>
-					</div>
-				</div>
 				<?php endif; ?>
 			</div>
 			<?php
