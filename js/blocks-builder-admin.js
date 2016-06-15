@@ -268,6 +268,11 @@
 		});
 	});
 
+	// Disable links inside block items.
+	$('#ttfmake-stage').on('click', '.wsuwp-blocks-item-body a', function (e) {
+		e.preventDefault();
+	});
+
 	// Fire the jQuery UI Sortable setup on page load.
 	$(document).ready(function () {
 		sortable_layout();
