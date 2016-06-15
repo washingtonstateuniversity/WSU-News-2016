@@ -2,7 +2,7 @@
 
 spine_load_section_header();
 
-global $ttfmake_section_data, $ttfmake_is_js_template, $post;
+global $ttfmake_section_data, $ttfmake_is_js_template;
 
 if ( in_array( $ttfmake_section_data['section']['id'], array( 'wsuwpblockshalves', 'wsuwpblockssidebarright', 'wsuwpblockssidebarleft' ) ) ) {
 	$wsuwp_range = 2;
@@ -16,8 +16,6 @@ if ( in_array( $ttfmake_section_data['section']['id'], array( 'wsuwpblockshalves
 
 $section_name  = ttfmake_get_section_name( $ttfmake_section_data, $ttfmake_is_js_template );
 $section_order = ( ! empty( $ttfmake_section_data['data']['columns-order'] ) ) ? $ttfmake_section_data['data']['columns-order'] : range( 1, $wsuwp_range );
-$blocks_page   = $post;
-
 ?>
 	<div class="wsuwp-spine-blocks-stage">
 		<?php $j = 1; foreach ( $section_order as $key => $i ) : ?>
@@ -53,10 +51,7 @@ $blocks_page   = $post;
 					</div>
 				</div>
 				<?php if ( $post_id ) : ?>
-					<?php
-					$post = get_post( $post_id );
-					setup_postdata( $post );
-					?>
+					<?php $post = get_post( $post_id ); setup_postdata( $post ); ?>
 					<div id="wsuwp-blocks-item-<?php echo esc_html( $post_id ); ?>" class="wsuwp-blocks-item">
 							<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">
 							<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>

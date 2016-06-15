@@ -1,5 +1,5 @@
 <?php
-global $ttfmake_section_data, $ttfmake_sections, $post;
+global $ttfmake_section_data, $ttfmake_sections;
 
 // Default to sidebar right if a section type has not been specified.
 $section_type = ( isset( $ttfmake_section_data['section-type'] ) ) ? $ttfmake_section_data['section-type'] : 'wsuwpblockssidebarright';
@@ -108,8 +108,6 @@ if ( '' === $section_id ) {
 			$column_count = array( 'one', 'two', 'three', 'four' );
 			$count = 0;
 
-			$blocks_page = $post;
-
 			foreach ( $data_columns as $column ) {
 				if ( isset( $column['column-background-image'] ) && ! empty( $column['column-background-image'] ) ) {
 					$column_background = "background-image:url('" . esc_url( $column['column-background-image'] ) ."');";
@@ -121,10 +119,7 @@ if ( '' === $section_id ) {
 
 					<?php if ( isset( $column['post-id'] ) && ! empty( $column['post-id'] ) ) : ?>
 						<?php /* Not sure what we'll do here just yet. */ ?>
-						<?php
-						$post = get_post( $column['post-id'] );
-						setup_postdata( $post );
-						?>
+						<?php $post = get_post( $column['post-id'] ); setup_postdata( $post ); ?>
 						<h2><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h2>
 						<div><?php the_excerpt(); ?></div>
 					<?php endif; ?>
@@ -132,9 +127,6 @@ if ( '' === $section_id ) {
 				</div>
 			<?php
 			}
-
-			wp_reset_postdata();
-			$post = $blocks_page;
 		}
 		?>
 	</section>

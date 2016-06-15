@@ -100,6 +100,7 @@ class WSU_News_Blocks_Builder {
 		if ( false === apply_filters( 'spine_enable_builder_module', true ) ) {
 			unset( $page_templates['template-blocks-builder.php'] );
 		}
+
 		return $page_templates;
 	}
 
@@ -111,8 +112,10 @@ class WSU_News_Blocks_Builder {
 		$args = array(
 			'public' => true,
 		);
+
 		$this->post_types = get_post_types( $args, 'names', 'and' );
-		unset($this->post_types['attachment']);
+
+		unset( $this->post_types['attachment'] );
 	}
 
 	/**
@@ -121,7 +124,8 @@ class WSU_News_Blocks_Builder {
 	 */
 	public function set_post_types_taxonomies() {
 		$this->post_types_taxonomies = get_object_taxonomies( $this->post_types, 'object' );
-		unset($this->post_types_taxonomies['post_format']);
+
+		unset( $this->post_types_taxonomies['post_format']) ;
 	}
 
 	/**
@@ -139,6 +143,7 @@ class WSU_News_Blocks_Builder {
 			710,
 			'builder-templates/'
 		);
+
 		ttfmake_add_section(
 			'wsuwpblockssidebarleft',
 			'Sidebar Left',
@@ -150,6 +155,7 @@ class WSU_News_Blocks_Builder {
 			720,
 			'builder-templates/'
 		);
+
 		ttfmake_add_section(
 			'wsuwpblockssidebarright',
 			'Sidebar Right',
@@ -161,6 +167,7 @@ class WSU_News_Blocks_Builder {
 			730,
 			'builder-templates/'
 		);
+
 		ttfmake_add_section(
 			'wsuwpblockshalves',
 			'Halves',
@@ -172,6 +179,7 @@ class WSU_News_Blocks_Builder {
 			740,
 			'builder-templates/'
 		);
+
 		ttfmake_add_section(
 			'wsuwpblocksthirds',
 			'Thirds',
@@ -183,6 +191,7 @@ class WSU_News_Blocks_Builder {
 			750,
 			'builder-templates/'
 		);
+
 		ttfmake_add_section(
 			'wsuwpblocksquarters',
 			'Quarters',
@@ -205,44 +214,57 @@ class WSU_News_Blocks_Builder {
 	 */
 	public function save_columns( $data ) {
 		$clean_data = array();
+
 		if ( isset( $data['columns-number'] ) ) {
 			if ( in_array( $data['columns-number'], range( 1, 4 ) ) ) {
 				$clean_data['columns-number'] = $data['columns-number'];
 			}
 		}
+
 		if ( isset( $data['columns-order'] ) ) {
 			$clean_data['columns-order'] = array_map( array( 'TTFMake_Builder_Save', 'clean_section_id' ), explode( ',', $data['columns-order'] ) );
 		}
+
 		if ( isset( $data['columns'] ) && is_array( $data['columns'] ) ) {
 			$i = 1;
+
 			foreach ( $data['columns'] as $id => $item ) {
 				if ( isset( $item['toggle'] ) ) {
 					if ( in_array( $item['toggle'], array( 'visible', 'invisible' ) ) ) {
 						$clean_data['columns'][ $id ]['toggle'] = $item['toggle'];
 					}
 				}
+
 				if ( isset( $item['post-id'] ) ) {
 					$clean_data['columns'][ $id ]['post-id'] = sanitize_text_field( $item['post-id'] );
 				}
+
 				$i++;
 			}
 		}
+
 		if ( isset( $data['section-classes'] ) ) {
 			$clean_data['section-classes'] = $this->clean_classes( $data['section-classes'] );
 		}
+
 		if ( isset( $data['section-wrapper'] ) ) {
 			$clean_data['section-wrapper'] = $this->clean_classes( $data['section-wrapper'] );
 		}
+
 		if ( isset( $data['label'] ) ) {
 			$clean_data['label'] = sanitize_text_field( $data['label'] );
 		}
+
 		if ( isset( $data['background-img'] ) ) {
 			$clean_data['background-img'] = esc_url_raw( $data['background-img'] );
 		}
+
 		if ( isset( $data['background-mobile-img'] ) ) {
 			$clean_data['background-mobile-img'] = esc_url_raw( $data['background-mobile-img'] );
 		}
+
 		$clean_data = apply_filters( 'spine_builder_save_columns', $clean_data, $data );
+
 		return $clean_data;
 	}
 
@@ -257,6 +279,7 @@ class WSU_News_Blocks_Builder {
 		$classes = explode( ' ', trim( $classes ) );
 		$classes = array_map( 'sanitize_key', $classes );
 		$classes = implode( ' ', $classes );
+
 		return $classes;
 	}
 
@@ -444,6 +467,7 @@ class WSU_News_Blocks_Builder {
 		if ( ! empty( $_POST['wsuwp_blocks_staged_items'] ) ) {
 			$issue_staged_items = explode( ',', $_POST['wsuwp_blocks_staged_items'] );
 			$issue_staged_items = array_map( 'absint', $issue_staged_items );
+
 			update_post_meta( $post_id, '_wsuwp_blocks_staged_items', $issue_staged_items );
 		} else {
 			delete_post_meta( $post_id, '_wsuwp_blocks_staged_items' );
@@ -451,6 +475,7 @@ class WSU_News_Blocks_Builder {
 
 		if ( ! empty( $_POST['wsuwp_blocks_post_type']) ) {
 			$selected_post_types = array_intersect( $_POST['wsuwp_blocks_post_type'], $this->post_types );
+
 			update_post_meta( $post_id, '_wsuwp_blocks_post_type', $selected_post_types );
 		} else {
 			delete_post_meta( $post_id, '_wsuwp_blocks_post_type' );
@@ -459,6 +484,7 @@ class WSU_News_Blocks_Builder {
 		foreach ( $this->post_types_taxonomies as $taxonomy ) {
 			if ( ! empty( $_POST['wsuwp_blocks_' . $taxonomy->name ]) ) {
 				$selected_terms = array_map( 'absint', $_POST['wsuwp_blocks_' . $taxonomy->name ] );
+
 				update_post_meta( $post_id, '_wsuwp_blocks_' . $taxonomy->name, $selected_terms );
 			} else {
 				delete_post_meta( $post_id, '_wsuwp_blocks_' . $taxonomy->name );
@@ -466,6 +492,7 @@ class WSU_News_Blocks_Builder {
 		}
 
 		$relation = $_POST['wsuwp_blocks_term_relation'];
+
 		if ( isset( $relation ) && ( 'OR' === $relation || 'AND' === $relation ) ) {
 			update_post_meta( $post_id, '_wsuwp_blocks_term_relation', $relation );
 		} else {
@@ -565,14 +592,16 @@ class WSU_News_Blocks_Builder {
 
 		foreach ( $query as $post ) {
 			setup_postdata( $post );
+
 			$items[] = array(
 				'id'      => $post->ID,
 				'title'   => get_the_title(),
-				'excerpt' =>  wpautop( get_the_excerpt() ),
+				'excerpt' => wpautop( get_the_excerpt() ),
 			);
 		}
 
 		wp_reset_postdata();
+
 		$post = $blocks_page;
 
 		return $items;
