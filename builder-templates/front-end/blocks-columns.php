@@ -4,8 +4,12 @@ global $ttfmake_section_data, $ttfmake_sections, $post;
 // Default to sidebar right if a section type has not been specified.
 $section_type = ( isset( $ttfmake_section_data['section-type'] ) ) ? $ttfmake_section_data['section-type'] : 'wsuwpblockssidebarright';
 
-if ( 'wsuwpblockssidebarright' === $section_type || 'wsuwpblockssidebarleft' === $section_type || 'wsuwpblocksthirds' === $section_type ) {
-	$section_layout = ( isset( $ttfmake_section_data['section-layout'] ) ) ? $ttfmake_section_data['section-layout'] : 'side-right';
+if ( 'wsuwpblockssidebarright' === $section_type ) {
+	$section_layout = 'side-right';
+} elseif ( 'wsuwpblockssidebarleft' === $section_type ) {
+	$section_layout = 'side-left';
+} elseif ( 'wsuwpblocksthirds' === $section_type ) {
+	$section_layout = 'thirds';
 } elseif ( 'wsuwpblockshalves' === $section_type ) {
 	$section_layout = 'halves';
 } elseif ( 'wsuwpblocksquarters' === $section_type ) {
