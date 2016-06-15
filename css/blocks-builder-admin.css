@@ -1,4 +1,3 @@
-/* Staging area for loaded content */
 label[for="wsuwp-blocks-content-hide"],
 #wsuwp-blocks-items .ttfmake-sortable-handle a,
 #wsuwp-blocks-items .wsuwp-blocks-item-body,
@@ -8,7 +7,7 @@ label[for="wsuwp-blocks-content-hide"],
 	display: none;
 }
 .wsuwp-blocks-content-options {
-    padding: 6px 10px 8px 0;
+	padding: 6px 10px 8px 0;
 }
 .wsuwp-blocks-content-options > span {
 	font-weight: 600;
@@ -20,7 +19,7 @@ label[for="wsuwp-blocks-content-hide"],
 }
 .wsuwp-blocks-taxonomy-terms {
 	background-color: #fdfdfd;
-    border: 1px solid #ddd;
+	border: 1px solid #ddd;
 	max-height: 230px;
 	overflow: auto;
 	padding: 0 0.9em;
@@ -58,10 +57,10 @@ label[for="wsuwp-blocks-content-hide"],
 	right: 39px;
 }
 .blocks-item-remove:before {
-    content: "\f182";
+	content: "\f182";
 }
 .blocks-item-remove:hover {
-    color: #c60c30;
+	color: #c60c30;
 }
 .wsuwp-blocks-item .spine-builder-column-configure {
 	right: 71px;
@@ -105,4 +104,15 @@ label[for="wsuwp-blocks-content-hide"],
 	line-height: 1.1em;
 	margin: 0;
 	padding: .5em 0 .2em 0;
+}
+.wsuwp-blocks-item-body a {
+	color: #981e32;
+	text-decoration: none;
+}
+.wsuwp-blocks-item-body a:hover {
+	color: #c60c30;
+}
+.wsuwp-blocks-item-body p {
+	margin: 0;
+	padding-bottom: 1em;
 }
