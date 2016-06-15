@@ -227,11 +227,37 @@ class WSU_News_Blocks_Builder {
 				$i++;
 			}
 		}
+		if ( isset( $data['section-classes'] ) ) {
+			$clean_data['section-classes'] = $this->clean_classes( $data['section-classes'] );
+		}
+		if ( isset( $data['section-wrapper'] ) ) {
+			$clean_data['section-wrapper'] = $this->clean_classes( $data['section-wrapper'] );
+		}
 		if ( isset( $data['label'] ) ) {
 			$clean_data['label'] = sanitize_text_field( $data['label'] );
 		}
+		if ( isset( $data['background-img'] ) ) {
+			$clean_data['background-img'] = esc_url_raw( $data['background-img'] );
+		}
+		if ( isset( $data['background-mobile-img'] ) ) {
+			$clean_data['background-mobile-img'] = esc_url_raw( $data['background-mobile-img'] );
+		}
 		$clean_data = apply_filters( 'spine_builder_save_columns', $clean_data, $data );
 		return $clean_data;
+	}
+
+	/**
+	 * Clean a passed input value of arbitrary classes.
+	 *
+	 * @param string $classes A string of arbitrary classes from a text input.
+	 *
+	 * @return string Clean, space delimited classes for output.
+	 */
+	public function clean_classes( $classes ) {
+		$classes = explode( ' ', trim( $classes ) );
+		$classes = array_map( 'sanitize_key', $classes );
+		$classes = implode( ' ', $classes );
+		return $classes;
 	}
 
 	/**
