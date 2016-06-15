@@ -1,9 +1,8 @@
 /* Staging area for loaded content */
-label[for="wsuwp-builder-content-hide"],
-.wsuwp-builder-term-relation,
-#wsuwp-layout-builder-items .ttfmake-sortable-handle a,
-#wsuwp-layout-builder-items .wsuwp-layout-builder-item-body,
-.ttfmake-section .ui-sortable-helper .wsuwp-layout-builder-item-body,
+label[for="wsuwp-blocks-content-hide"],
+#wsuwp-blocks-items .ttfmake-sortable-handle a,
+#wsuwp-blocks-items .wsuwp-blocks-item-body,
+.ttfmake-section .ui-sortable-helper .wsuwp-blocks-item-body,
 .ttfmake-builder-active .ttfmake-menu-list-item:nth-child(n+7):nth-child(-n+12),
 .wsuwp-drag-drop .ttfmake-menu-list-item:nth-child(n+2):nth-child(-n+7) {
 	display: none;
@@ -34,12 +33,12 @@ label[for="wsuwp-builder-content-hide"],
 	text-align: right;
 	width: 100%;
 }
-#wsuwp-layout-builder-items {
+#wsuwp-blocks-items {
 	float: none;
 	padding: 12px 0 0;
 	margin: 0;
 }
-#wsuwp-layout-builder-items:empty {
+#wsuwp-blocks-items:empty {
 	padding: 0;
 }
 .ttfmake-sortable-handle .wsuwp-builder-column-title {
@@ -52,28 +51,28 @@ label[for="wsuwp-builder-content-hide"],
 	white-space: nowrap;
 	width: 100%;
 }
-#wsuwp-layout-builder-items .ttfmake-sortable-handle .wsuwp-builder-column-title {
+#wsuwp-blocks-items .ttfmake-sortable-handle .wsuwp-builder-column-title {
 	padding: 0 1rem;
 }
-.spine-builder-item-remove {
+.blocks-item-remove {
 	right: 39px;
 }
-.spine-builder-item-remove:before {
+.blocks-item-remove:before {
     content: "\f182";
 }
-.spine-builder-item-remove:hover {
+.blocks-item-remove:hover {
     color: #c60c30;
 }
-.wsuwp-layout-builder-item .spine-builder-column-configure {
+.wsuwp-blocks-item .spine-builder-column-configure {
 	right: 71px;
 }
-.wsuwp-spine-builder-column .layout-builder-placeholder {
+.wsuwp-spine-builder-column .blocks-item-placeholder {
 	border: 1px dotted #222;
 	height: 30px;
 }
-#wsuwp-layout-builder-items .wsuwp-layout-builder-item:last-child .ttfmake-sortable-handle,
+#wsuwp-blocks-items .wsuwp-blocks-item:last-child .ttfmake-sortable-handle,
 .ui-sortable-helper .ttfmake-sortable-handle,
-#ttfmake-stage .wsuwp-layout-builder-item .ttfmake-sortable-handle {
+#ttfmake-stage .wsuwp-blocks-item .ttfmake-sortable-handle {
 	border-bottom: 1px solid #d9d9d9;
 }
 .ttfmake-section-body {
@@ -95,11 +94,11 @@ label[for="wsuwp-builder-content-hide"],
 	padding: 0 1rem;
 	opacity: 0.25;
 }
-#ttfmake-stage .wsuwp-layout-builder-item .wsuwp-layout-builder-item-body {
+#ttfmake-stage .wsuwp-blocks-item .wsuwp-blocks-item-body {
 	font-size: 'Open Sans', 'Lucida Sans', 'Lucida Grande', 'Lucida Sans Unicode', sans-serif;
 	padding: 12px;
 }
-#poststuff .wsuwp-layout-builder-item-body h2 {
+#poststuff .wsuwp-blocks-item-body h2 {
 	font-size: 1.8rem;
 	font-weight: 700;
 	letter-spacing: 0;

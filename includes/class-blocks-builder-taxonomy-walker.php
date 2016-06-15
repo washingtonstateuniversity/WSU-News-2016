@@ -46,7 +46,7 @@ class WSUWP_Layout_Builder_Taxonomy_Options_Walker extends Walker {
 	public function start_el( &$output, $category, $depth = 0, $args = array(), $id = 0 ) {
 		$output .= "\n<li>" .
 		'<label>' .
-		'<input value="' . $category->term_id . '" type="checkbox" name="wsuwp_layout_builder_' . $args['taxonomy'] . '_terms[]" ' .
+		'<input value="' . $category->term_id . '" type="checkbox" name="wsuwp_blocks_' . $args['taxonomy'] . '[]" ' .
 		checked( in_array( $category->term_id, $args['selected_cats'] ), true, false ) . ' /> ' .
 		esc_html( apply_filters( 'the_category', $category->name ) ) .
 		'</label>';

@@ -9,14 +9,14 @@
 	 *
 	 * @type {*|HTMLElement}
 	 */
-	var $staged_items = $('#wsuwp-layout-builder-items');
+	var $staged_items = $('#wsuwp-blocks-items');
 
-	if (window.wsuwp_layout_build.items instanceof Array) {
-		load_layout_build_items(window.wsuwp_layout_build.items);
+	if (window.wsuwp_blocks.items instanceof Array) {
+		load_blocks_items(window.wsuwp_blocks.items);
 	}
 
 	/**
-	 * Use jQuery UI Sortable to add sorting functionality to layout builds.
+	 * Use jQuery UI Sortable to add sorting functionality to block layout builds.
 	 */
 	function sortable_layout() {
 		var item_column;
@@ -24,18 +24,18 @@
 			connectWith: '.wsuwp-spine-builder-column',
 			handle: '.ttfmake-sortable-handle',
 			opacity: 0.6,
-			placeholder: 'layout-builder-placeholder',
+			placeholder: 'blocks-item-placeholder',
 			start: function (event, ui) {
 				item_column = $(ui.item).parent();
 			},
 			stop: function (event, ui) {
-				var existing_item = ui.item.siblings('.wsuwp-layout-builder-item');
-				if (existing_item && ui.item.parent('#wsuwp-layout-builder-items').length == 0) {
-					$(existing_item).appendTo(item_column).find('.wsuwp-layout-builder-item-body').css('display', '');
+				var existing_item = ui.item.siblings('.wsuwp-blocks-item');
+				if (existing_item && ui.item.parent('#wsuwp-blocks-items').length == 0) {
+					$(existing_item).appendTo(item_column).find('.wsuwp-blocks-item-body').css('display', '');
 				}
-				if (ui.item.parent('#wsuwp-layout-builder-items').length == 1) {
+				if (ui.item.parent('#wsuwp-blocks-items').length == 1) {
 					ui.item.find('.handlediv').removeClass('wsuwp-toggle-closed');
-					ui.item.find('.wsuwp-layout-builder-item-body').css('display', '');
+					ui.item.find('.wsuwp-blocks-item-body').css('display', '');
 				}
 				process_sorted_data();
 			}
@@ -43,25 +43,25 @@
 	}
 
 	/**
-	 * Process a list of items and add them to the front end view of the layout build.
+	 * Process a list of items and add them to the front end view of the build.
 	 *
 	 * @param raw_data
 	 */
-	function load_layout_build_items(raw_data) {
+	function load_blocks_items(raw_data) {
 		var data = '';
 
 		// Append the results to the existing build of items.
 		$.each(raw_data, function (index, val) {
-			data += '<div id="wsuwp-layout-builder-item-' + val.id + '" class="wsuwp-layout-builder-item">' +
+			data += '<div id="wsuwp-blocks-item-' + val.id + '" class="wsuwp-blocks-item">' +
 				'<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">' +
 					'<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>' +
-					'<a href="#" class="ttfmake-builder-section-footer-link spine-builder-item-remove"><span>Remove</span></a>' +
+					'<a href="#" class="ttfmake-builder-section-footer-link blocks-item-remove"><span>Remove</span></a>' +
 					'<a href="#" class="wsuwp-column-toggle" title="Click to toggle"><div class="handlediv"></div></a>' +
 					'<div class="wsuwp-builder-column-title">' + val.title + '</div>' +
 				'</div>' +
-				'<div class="wsuwp-layout-builder-item-body wsuwp-column-content">' +
+				'<div class="wsuwp-blocks-item-body wsuwp-column-content">' +
 					'<h2>' + val.title + '</h2>' +
-					'<div class="wsuwp-layout-builder-item-excerpt">' + val.excerpt + '</div>' +
+					'<div class="wsuwp-blocks-item-excerpt">' + val.excerpt + '</div>' +
 				'</div>' +
 			'</div>';
 		});
@@ -82,10 +82,10 @@
 		// Items added to the Page Builder interface.
 		$.each(placed_items, function () {
 			var column  = $(this),
-				article = column.children('.wsuwp-layout-builder-item');
+				article = column.children('.wsuwp-blocks-item');
 
 			if (article.length) {
-				var new_val = article[0].id.replace('wsuwp-layout-builder-item-', '');
+				var new_val = article[0].id.replace('wsuwp-blocks-item-', '');
 				column.children('.wsuwp-column-post-id').val(new_val);
 			} else {
 				column.children('.wsuwp-column-post-id').val('');
@@ -94,29 +94,29 @@
 
 		// Items in the staging area.
 		$.each(staged_items, function (index, val) {
-			new_val = val.replace('wsuwp-layout-builder-item-', '');
+			new_val = val.replace('wsuwp-blocks-item-', '');
 			staged_items[index] = new_val;
 		});
 
-		$('#wsuwp-layout-builder-staged-items').val(staged_items);
+		$('#wsuwp-blocks-staged-items').val(staged_items);
 
 	}
 
 	// Load items into the staging area.
-	$('#wsuwp-builder-load-items').on('click', function (e) {
+	$('#wsuwp-blocks-load-items').on('click', function (e) {
 		e.preventDefault();
 
 		var post_type = $('[name="wsuwp_blocks_post_type[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			category = $('[name="wsuwp_layout_builder_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			tag = $('[name="wsuwp_layout_builder_post_tag_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			u_category = $('[name="wsuwp_layout_builder_wsuwp_university_category_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			location = $('[name="wsuwp_layout_builder_wsuwp_university_location_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			organization = $('[name="wsuwp_layout_builder_wsuwp_university_org_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			relation = $('[name="wsuwp_layout_builder_term_relation"]:checked').val();
+			category = $('[name="wsuwp_blocks_category[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			tag = $('[name="wsuwp_blocks_post_tag[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			u_category = $('[name="wsuwp_blocks_wsuwp_university_category[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			location = $('[name="wsuwp_blocks_wsuwp_university_location[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			organization = $('[name="wsuwp_blocks_wsuwp_university_org_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
+			relation = $('[name="wsuwp_blocks_term_relation"]:checked').val();
 
 		// Cache the issue build area for future use.
 		var data = {
-			action: 'set_layout_builder_items',
+			action: 'set_blocks_items',
 			post_type: post_type,
 			category: category,
 			tag: tag,
@@ -136,7 +136,7 @@
 			var data = '',
 				response_data = $.parseJSON(response);
 
-			load_layout_build_items(response_data);
+			load_blocks_items(response_data);
 			process_sorted_data();
 		});
 
@@ -228,19 +228,21 @@
 
 	// Display the builder and custom sections when the drag/drop builder template is selected.
 	$('#page_template').on('change', function () {
-		if ('template-dragdrop.php' === $(this).val()) {
+		if ('template-blocks-builder.php' === $(this).val()) {
 			$('body').addClass('wsuwp-drag-drop');
 			$('#postdivrich').hide();
 			$('#ttfmake-builder').show();
-			$('#wsuwp-builder-content').show();
+			$('#wsuwp-blocks-content').show();
+			$('#ttfmake-builder-hide').prop('checked', true).parent().show();
+			$('#wsuwp-blocks-content-hide').prop('checked', true).parent().show();
 		} else {
 			$('body').removeClass('wsuwp-drag-drop');
-			$('#wsuwp-builder-content').hide();
+			$('#wsuwp-blocks-content').hide();
 		}
 	});
 
 	// Item removal handling.
-	$('#ttfmake-stage').on('click', '.spine-builder-item-remove', function (e) {
+	$('#ttfmake-stage').on('click', '.blocks-item-remove', function (e) {
 		e.preventDefault();
 
 		// Confirm before removing the item.
@@ -249,7 +251,7 @@
 		}
 
 		// We'll also need to remove the configuration modal input values (if we use any).
-		$(this).closest('.wsuwp-layout-builder-item').animate({
+		$(this).closest('.wsuwp-blocks-item').animate({
 			opacity: 'toggle',
 			height: 'toggle'
 		}, oneApp.options.closeSpeed, function () {

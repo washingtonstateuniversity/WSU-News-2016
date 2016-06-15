@@ -4,11 +4,11 @@ spine_load_section_header();
 
 global $ttfmake_section_data, $ttfmake_is_js_template;
 
-if ( in_array( $ttfmake_section_data['section']['id'], array( 'wsuwpdragdrophalves', 'wsuwpdragdropsidebarright', 'wsuwpdragdropsidebarleft' ) ) ) {
+if ( in_array( $ttfmake_section_data['section']['id'], array( 'wsuwpblockshalves', 'wsuwpblockssidebarright', 'wsuwpblockssidebarleft' ) ) ) {
 	$wsuwp_range = 2;
-} elseif ( 'wsuwpdragdropthirds' === $ttfmake_section_data['section']['id'] ) {
+} elseif ( 'wsuwpblocksthirds' === $ttfmake_section_data['section']['id'] ) {
 	$wsuwp_range = 3;
-} elseif ( 'wsuwpdragdropquarters' === $ttfmake_section_data['section']['id'] ) {
+} elseif ( 'wsuwpblocksquarters' === $ttfmake_section_data['section']['id'] ) {
 	$wsuwp_range = 4;
 } else {
 	$wsuwp_range = 1;
@@ -63,16 +63,16 @@ $section_order  = ( ! empty( $ttfmake_section_data['data']['columns-order'] ) ) 
 					</div>
 				</div>
 				<?php if ( $post_id ) : ?>
-				<div id="wsuwp-layout-builder-item-<?php echo esc_html( $post_id ); ?>" class="wsuwp-layout-builder-item">
+				<div id="wsuwp-blocks-item-<?php echo esc_html( $post_id ); ?>" class="wsuwp-blocks-item">
 						<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">
 						<a href="#" class="spine-builder-column-configure"><span>Configure</span></a>
-						<a href="#" class="ttfmake-builder-section-footer-link spine-builder-item-remove"><span>Remove</span></a>
+						<a href="#" class="ttfmake-builder-section-footer-link blocks-item-remove"><span>Remove</span></a>
 						<a href="#" class="wsuwp-column-toggle" title="Click to toggle"><div class="handlediv"></div></a>
 						<div class="wsuwp-builder-column-title"><?php echo get_the_title( esc_html( $post_id ) ); ?></div>
 					</div>
-					<div class="wsuwp-layout-builder-item-body wsuwp-column-content">
+					<div class="wsuwp-blocks-item-body wsuwp-column-content">
 						<h2><?php echo get_the_title( esc_html( $post_id ) ); ?></h2>
-						<div class="wsuwp-layout-builder-item-excerpt"><?php echo get_the_excerpt( esc_html( $post_id ) ); ?></div>
+						<div class="wsuwp-blocks-item-excerpt"><?php echo get_the_excerpt( esc_html( $post_id ) ); ?></div>
 					</div>
 				</div>
 				<?php endif; ?>

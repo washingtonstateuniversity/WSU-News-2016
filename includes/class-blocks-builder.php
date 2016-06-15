@@ -1,9 +1,9 @@
 <?php
 
-class WSU_News_Layout_Builder {
+class WSU_News_Blocks_Builder {
 
 	/**
-	 * @var WSU_News_Layout_Builder
+	 * @var WSU_News_Blocks_Builder
 	 */
 	private static $instance;
 
@@ -18,14 +18,13 @@ class WSU_News_Layout_Builder {
 	public $post_types_taxonomies = array();
 
 	/**
-	 * Maintain and return the one instance and initiate hooks when
-	 * called the first time.
+	 * Maintain and return the one instance and initiate hooks when called the first time.
 	 *
-	 * @return \WSU_News_Layout_Builder
+	 * @return \WSU_News_Blocks_Builder
 	 */
 	public static function get_instance() {
 		if ( ! isset( self::$instance ) ) {
-			self::$instance = new WSU_News_Layout_Builder;
+			self::$instance = new WSU_News_Blocks_Builder;
 			self::$instance->load_walker();
 			self::$instance->setup_hooks();
 		}
@@ -37,7 +36,7 @@ class WSU_News_Layout_Builder {
 	 * Load the walker class used by this plugin.
 	 */
 	public function load_walker() {
-		require_once( dirname( __FILE__ ) . '/class-layout-builder-taxonomy-walker.php' );
+		require_once( dirname( __FILE__ ) . '/class-blocks-builder-taxonomy-walker.php' );
 	}
 
 	/**
@@ -51,18 +50,20 @@ class WSU_News_Layout_Builder {
 		add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ), 10 );
 		add_action( 'add_meta_boxes_page', array( $this, 'add_meta_boxes' ), 10 );
 		add_action( 'save_post_page', array( $this, 'save_post' ), 10, 2 );
-		add_action( 'wp_ajax_set_layout_builder_items', array( $this, 'ajax_callback' ), 10 );
-		add_action( 'wp_ajax_nopriv_set_layout_builder_items', array( $this, 'ajax_callback' ), 10 );
+		add_action( 'wp_ajax_set_blocks_items', array( $this, 'ajax_callback' ), 10 );
+		add_action( 'wp_ajax_nopriv_set_blocks_items', array( $this, 'ajax_callback' ), 10 );
 	}
 
 	/**
-	 * Set pages that have the Drag/Drop Builder Template to use the builder.
+	 * Set pages that have the Blocks Builder template as builder pages.
 	 *
 	 * @param bool    $is_builder_page    Whether or not the post uses the builder.
 	 * @param int     $post_id            The ID of post being evaluated.
+	 *
+	 * @return bool True if the page is using the Blocks Builder template.
 	 */
 	public function make_is_builder_page( $is_builder_page, $post_id ) {
-		if ( 'template-dragdrop.php' === get_page_template_slug( $post_id ) ) {
+		if ( 'template-blocks-builder.php' === get_page_template_slug( $post_id ) ) {
 			$is_builder_page = true;
 		}
 
@@ -95,68 +96,68 @@ class WSU_News_Layout_Builder {
 	 */
 	public function custom_builder_sections() {
 		ttfmake_add_section(
-			'wsuwpdragdropsingle',
+			'wsuwpblockssingle',
 			'Single',
 			get_template_directory_uri() . '/inc/builder/sections/css/images/blank.png',
 			'A single column.',
 			array( $this, 'save_columns' ),
-			'admin/dragdrop-columns',
-			'front-end/dragdrop-columns',
+			'admin/blocks-columns',
+			'front-end/blocks-columns',
 			710,
 			'builder-templates/'
 		);
 		ttfmake_add_section(
-			'wsuwpdragdropsidebarleft',
+			'wsuwpblockssidebarleft',
 			'Sidebar Left',
 			get_template_directory_uri() . '/inc/builder-custom/images/side-left.png',
 			'Two column layout with the right side larger than the left.',
 			array( $this, 'save_columns' ),
-			'admin/dragdrop-columns',
-			'front-end/dragdrop-columns',
+			'admin/blocks-columns',
+			'front-end/blocks-columns',
 			720,
 			'builder-templates/'
 		);
 		ttfmake_add_section(
-			'wsuwpdragdropsidebarright',
+			'wsuwpblockssidebarright',
 			'Sidebar Right',
 			get_template_directory_uri() . '/inc/builder-custom/images/side-right.png',
 			'Two column layout with the left side larger than the right.',
 			array( $this, 'save_columns' ),
-			'admin/dragdrop-columns',
-			'front-end/dragdrop-columns',
+			'admin/blocks-columns',
+			'front-end/blocks-columns',
 			730,
 			'builder-templates/'
 		);
 		ttfmake_add_section(
-			'wsuwpdragdrophalves',
+			'wsuwpblockshalves',
 			'Halves',
 			get_template_directory_uri() . '/inc/builder-custom/images/halves.png',
 			'Two equal columns.',
 			array( $this, 'save_columns' ),
-			'admin/dragdrop-columns',
-			'front-end/dragdrop-columns',
+			'admin/blocks-columns',
+			'front-end/blocks-columns',
 			740,
 			'builder-templates/'
 		);
 		ttfmake_add_section(
-			'wsuwpdragdropthirds',
+			'wsuwpblocksthirds',
 			'Thirds',
 			get_template_directory_uri() . '/inc/builder-custom/images/thirds.png',
-			'Three column layout, choose between thirds and triptych.',
+			'Three equal columns.',
 			array( $this, 'save_columns' ),
-			'admin/dragdrop-columns',
-			'front-end/dragdrop-columns',
+			'admin/blocks-columns',
+			'front-end/blocks-columns',
 			750,
 			'builder-templates/'
 		);
 		ttfmake_add_section(
-			'wsuwpdragdropquarters',
+			'wsuwpblocksquarters',
 			'Quarters',
 			get_template_directory_uri() . '/inc/builder-custom/images/quarters.png',
-			'Four column layout, all equal sizes.',
+			'Four equal columns.',
 			array( $this, 'save_columns' ),
-			'admin/dragdrop-columns',
-			'front-end/dragdrop-columns',
+			'admin/blocks-columns',
+			'front-end/blocks-columns',
 			760,
 			'builder-templates/'
 		);
@@ -208,8 +209,8 @@ class WSU_News_Layout_Builder {
 			return;
 		}
 
-		wp_enqueue_script( 'wsuwp-layout-builder', get_stylesheet_directory_uri() . '/js/layout-builder-admin.js', array( 'jquery-ui-draggable', 'jquery-ui-sortable', 'ttfmake-admin-edit-page' ), false, true );
-		wp_enqueue_style(  'wsuwp-layout-builder', get_stylesheet_directory_uri() . '/css/layout-builder-admin.css', array( 'ttfmake-builder' ) );
+		wp_enqueue_script( 'wsuwp-blocks-builder', get_stylesheet_directory_uri() . '/js/blocks-builder-admin.js', array( 'jquery-ui-draggable', 'jquery-ui-sortable', 'ttfmake-admin-edit-page' ), false, true );
+		wp_enqueue_style(  'wsuwp-blocks-builder', get_stylesheet_directory_uri() . '/css/blocks-builder-admin.css', array( 'ttfmake-builder' ) );
 	}
 
 	/**
@@ -219,9 +220,9 @@ class WSU_News_Layout_Builder {
 		remove_meta_box( 'submitdiv', 'page', 'side' );
 
 		add_meta_box(
-			'wsuwp-builder-content',
+			'wsuwp-blocks-content',
 			'Content Items',
-			array( $this, 'display_builder_content_meta_box' ),
+			array( $this, 'display_blocks_content_meta_box' ),
 			'page',
 			'side',
 			'high'
@@ -235,7 +236,7 @@ class WSU_News_Layout_Builder {
 	 *
 	 * @param WP_Post $post Object of the current post being edited.
 	 */
-	public function display_builder_content_meta_box( $post ) {
+	public function display_blocks_content_meta_box( $post ) {
 		wp_nonce_field( 'save-wsuwp-layout-build', '_wsuwp_layout_build_nonce' );
 
 		$localized_data = array( 'post_id' => $post->ID );
@@ -243,13 +244,13 @@ class WSU_News_Layout_Builder {
 		$button_value = 'Load Items';
 
 		// If this page already has content loaded, we want to make it available to the JS.
-		if ( $post_ids = get_post_meta( $post->ID, '_wsuwp_layout_builder_staged_items', true ) ) {
+		if ( $post_ids = get_post_meta( $post->ID, '_wsuwp_blocks_staged_items', true ) ) {
 			$localized_data['items'] = $this->_build_layout_items_response( $post_ids );
 			$staged_items = implode( ',', $post_ids );
 			$button_value = 'Refresh Items';
 		}
 
-		wp_localize_script( 'wsuwp-layout-builder', 'wsuwp_layout_build', $localized_data );
+		wp_localize_script( 'wsuwp-blocks-builder', 'wsuwp_blocks', $localized_data );
 
 		?>
 		<div class="wsuwp-blocks-content-options post-type">
@@ -288,7 +289,7 @@ class WSU_News_Layout_Builder {
 
 		<div class="wsuwp-blocks-content-options tax-query-relation">
 			<?php // Set up variables for the taxonomy query relation options.
-			$relation_meta = get_post_meta( $post->ID, '_wsuwp_layout_builder_term_relation', true );
+			$relation_meta = get_post_meta( $post->ID, '_wsuwp_blocks_term_relation', true );
 			$relation = ( $relation_meta ) ? $relation_meta : 'OR';
 			?>
 			With: <span class="display"><?php echo ( 'OR' === $relation ) ? 'Any of the following' : 'All of the following'; ?></span>
@@ -297,10 +298,10 @@ class WSU_News_Layout_Builder {
 			</a>
 			<div class="hide-if-js">
 				<label>
-					<input type="radio" name="wsuwp_layout_builder_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?>/> Any of the following
+					<input type="radio" name="wsuwp_blocks_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?>/> Any of the following
 				</label><br />
 				<label>
-					<input type="radio" name="wsuwp_layout_builder_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/> All of the following
+					<input type="radio" name="wsuwp_blocks_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/> All of the following
 				</label><br />
 				<p>
 					<a href="#" class="hide-if-no-js button">OK</a>
@@ -314,7 +315,7 @@ class WSU_News_Layout_Builder {
 			$selected_terms = '';
 			$display_terms  = 'None';
 
-			if ( $terms = get_post_meta( $post->ID, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms', true ) ) {
+			if ( $terms = get_post_meta( $post->ID, '_wsuwp_blocks_' . $taxonomy->name, true ) ) {
 				$selected_terms = $terms;
 				$display_terms = array();
 				foreach ( $terms as $term_id ) {
@@ -350,10 +351,10 @@ class WSU_News_Layout_Builder {
 			</div>
 		<?php } ?>
 		<div class="wsuwp-builder-load-button-wrap">
-			<input type="button" value="<?php echo $button_value; ?>" id="wsuwp-builder-load-items" class="button button-large button-secondary" />
+			<input type="button" value="<?php echo $button_value; ?>" id="wsuwp-blocks-load-items" class="button button-large button-secondary" />
 		</div>
-		<div id="wsuwp-layout-builder-items" class="wsuwp-spine-builder-column"></div>
-		<input type="hidden" id="wsuwp-layout-builder-staged-items" name="wsuwp_layout_builder_staged_items" value="<?php echo esc_attr( $staged_items ); ?>" />
+		<div id="wsuwp-blocks-items" class="wsuwp-spine-builder-column"></div>
+		<input type="hidden" id="wsuwp-blocks-staged-items" name="wsuwp_blocks_staged_items" value="<?php echo esc_attr( $staged_items ); ?>" />
 		<?php
 	}
 
@@ -381,12 +382,12 @@ class WSU_News_Layout_Builder {
 			return;
 		}
 
-		if ( ! empty( $_POST['wsuwp_layout_builder_staged_items'] ) ) {
-			$issue_staged_items = explode( ',', $_POST['wsuwp_layout_builder_staged_items'] );
+		if ( ! empty( $_POST['wsuwp_blocks_staged_items'] ) ) {
+			$issue_staged_items = explode( ',', $_POST['wsuwp_blocks_staged_items'] );
 			$issue_staged_items = array_map( 'absint', $issue_staged_items );
-			update_post_meta( $post_id, '_wsuwp_layout_builder_staged_items', $issue_staged_items );
+			update_post_meta( $post_id, '_wsuwp_blocks_staged_items', $issue_staged_items );
 		} else {
-			delete_post_meta( $post_id, '_wsuwp_layout_builder_staged_items' );
+			delete_post_meta( $post_id, '_wsuwp_blocks_staged_items' );
 		}
 
 		if ( ! empty( $_POST['wsuwp_blocks_post_type']) ) {
@@ -397,19 +398,19 @@ class WSU_News_Layout_Builder {
 		}
 
 		foreach ( $this->post_types_taxonomies as $taxonomy ) {
-			if ( ! empty( $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms']) ) {
-				$selected_terms = array_map( 'absint', $_POST['wsuwp_layout_builder_' . $taxonomy->name . '_terms'] );
-				update_post_meta( $post_id, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms', $selected_terms );
+			if ( ! empty( $_POST['wsuwp_blocks_' . $taxonomy->name ]) ) {
+				$selected_terms = array_map( 'absint', $_POST['wsuwp_blocks_' . $taxonomy->name ] );
+				update_post_meta( $post_id, '_wsuwp_blocks_' . $taxonomy->name, $selected_terms );
 			} else {
-				delete_post_meta( $post_id, '_wsuwp_layout_builder_' . $taxonomy->name . '_terms' );
+				delete_post_meta( $post_id, '_wsuwp_blocks_' . $taxonomy->name );
 			}
 		}
 
-		$relation = $_POST['wsuwp_layout_builder_term_relation'];
+		$relation = $_POST['wsuwp_blocks_term_relation'];
 		if ( isset( $relation ) && ( 'OR' === $relation || 'AND' === $relation ) ) {
-			update_post_meta( $post_id, '_wsuwp_layout_builder_term_relation', $relation );
+			update_post_meta( $post_id, '_wsuwp_blocks_term_relation', $relation );
 		} else {
-			delete_post_meta( $post_id, '_wsuwp_layout_builder_term_relation' );
+			delete_post_meta( $post_id, '_wsuwp_blocks_term_relation' );
 		}
 	}
 
@@ -427,7 +428,7 @@ class WSU_News_Layout_Builder {
 	 *
 	 * @return array Containing information on each issue article.
 	 */
-	private function _build_layout_items_response( $post_ids = array(), $post_type = array('post'), $category = array(), $tag = array(), $u_category = array(), $location = array(), $org = array(), $relation = 'OR' ) {
+	private function _build_layout_items_response( $post_ids = array(), $post_type = array('post'), $relation = 'OR', $category = array(), $tag = array(), $u_category = array(), $location = array(), $org = array() ) {
 		$query_args = array(
 			'post_type'      => $post_type,
 			'posts_per_page' => 10,
@@ -515,7 +516,7 @@ class WSU_News_Layout_Builder {
 	 * Handle the ajax callback to push a list of items to a page.
 	 */
 	public function ajax_callback() {
-		if ( ! DOING_AJAX || ! isset( $_POST['action'] ) || 'set_layout_builder_items' !== $_POST['action'] ) {
+		if ( ! DOING_AJAX || ! isset( $_POST['action'] ) || 'set_blocks_items' !== $_POST['action'] ) {
 			die();
 		}
 
@@ -525,10 +526,16 @@ class WSU_News_Layout_Builder {
 			$post_ids = explode( ',', $_POST['post_ids'] );
 		}
 
-		$post_type = array();
+		$post_type = array( 'post' );
 
 		if ( isset( $_POST['post_type'] ) ) {
 			$post_type = array_intersect( $_POST['post_type'], $this->post_types );
+		}
+
+		$relation = 'OR';
+
+		if ( isset( $_POST['relation'] ) && ( 'OR' === $_POST['relation'] || 'AND' === $_POST['relation'] ) ) {
+			$relation = $_POST['relation'];
 		}
 
 		$category = array();
@@ -561,25 +568,19 @@ class WSU_News_Layout_Builder {
 			$organization = array_map( 'absint', $_POST['organization'] );
 		}
 
-		$relation = 'OR';
-
-		if ( isset( $_POST['relation'] ) && ( 'OR' === $_POST['relation'] || 'AND' === $_POST['relation'] ) ) {
-			$relation = $_POST['relation'];
-		}
-
-		echo json_encode( $this->_build_layout_items_response( $post_ids, $post_type, $category, $tag, $u_category, $location, $organization, $relation ) );
+		echo json_encode( $this->_build_layout_items_response( $post_ids, $post_type, $relation, $category, $tag, $u_category, $location, $organization ) );
 
 		exit();
 	}
 
 }
 
-add_action( 'after_setup_theme', 'WSU_News_Layout_Builder', 11 );
+add_action( 'after_setup_theme', 'WSU_News_Blocks_Builder', 11 );
 /**
  * Start things up.
  *
- * @return \WSU_News_Layout_Builder
+ * @return \WSU_News_Blocks_Builder
  */
-function WSU_News_Layout_Builder() {
-	return WSU_News_Layout_Builder::get_instance();
+function WSU_News_Blocks_Builder() {
+	return WSU_News_Blocks_Builder::get_instance();
 }

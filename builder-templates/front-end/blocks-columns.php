@@ -2,13 +2,13 @@
 global $ttfmake_section_data, $ttfmake_sections;
 
 // Default to sidebar right if a section type has not been specified.
-$section_type = ( isset( $ttfmake_section_data['section-type'] ) ) ? $ttfmake_section_data['section-type'] : 'wsuwpdragdropsidebarright';
+$section_type = ( isset( $ttfmake_section_data['section-type'] ) ) ? $ttfmake_section_data['section-type'] : 'wsuwpblockssidebarright';
 
-if ( 'wsuwpdragdropsidebarright' === $section_type || 'wsuwpdragdropsidebarleft' === $section_type || 'wsuwpdragdropthirds' === $section_type ) {
+if ( 'wsuwpblockssidebarright' === $section_type || 'wsuwpblockssidebarleft' === $section_type || 'wsuwpblocksthirds' === $section_type ) {
 	$section_layout = ( isset( $ttfmake_section_data['section-layout'] ) ) ? $ttfmake_section_data['section-layout'] : 'side-right';
-} elseif ( 'wsuwpdragdrophalves' === $section_type ) {
+} elseif ( 'wsuwpblockshalves' === $section_type ) {
 	$section_layout = 'halves';
-} elseif ( 'wsuwpdragdropquarters' === $section_type ) {
+} elseif ( 'wsuwpblocksquarters' === $section_type ) {
 	$section_layout = 'quarters';
 } else {
 	$section_layout = 'single';
@@ -16,12 +16,12 @@ if ( 'wsuwpdragdropsidebarright' === $section_type || 'wsuwpdragdropsidebarleft'
 
 // Provide a list matching the number of columns to the selected section type.
 $section_type_columns = array(
-	'wsuwpdragdropsidebarright' => 2,
-	'wsuwpdragdropsidebarleft'  => 2,
-	'wsuwpdragdropthirds'       => 3,
-	'wsuwpdragdrophalves'       => 2,
-	'wsuwpdragdropquarters'     => 4,
-	'wsuwpdragdropsingle'       => 1,
+	'wsuwpblockssidebarright' => 2,
+	'wsuwpblockssidebarleft'  => 2,
+	'wsuwpblocksthirds'       => 3,
+	'wsuwpblockshalves'       => 2,
+	'wsuwpblocksquarters'     => 4,
+	'wsuwpblockssingle'       => 1,
 );
 
 // Retrieve data for the column being output.

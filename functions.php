@@ -24,7 +24,7 @@ class WSU_News_Theme {
 	 * Load "plugins" included with the theme.
 	 */
 	public function load_plugins() {
-		require_once( dirname( __FILE__ ) . '/includes/class-layout-builder.php' );
+		require_once( dirname( __FILE__ ) . '/includes/class-blocks-builder.php' );
 	}
 
 }

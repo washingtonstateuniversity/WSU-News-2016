@@ -1,6 +1,6 @@
 <?php
 /**
- * Template Name: Drag/Drop Builder Template
+ * Template Name: Blocks Builder Template
  */
 
 get_header();
