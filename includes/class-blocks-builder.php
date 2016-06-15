@@ -43,6 +43,7 @@ class WSU_News_Blocks_Builder {
 	 * Setup hooks for the plugin.
 	 */
 	public function setup_hooks() {
+		add_filter( 'make_will_be_builder_page', array( $this, 'make_will_be_builder_page' ), 10, 2 );
 		add_filter( 'make_is_builder_page', array( $this, 'make_is_builder_page'), 10, 2 );
 		add_action( 'admin_init', array( $this, 'set_post_types' ) );
 		add_action( 'admin_init', array( $this, 'set_post_types_taxonomies' ) );
@@ -52,6 +53,22 @@ class WSU_News_Blocks_Builder {
 		add_action( 'save_post_page', array( $this, 'save_post' ), 10, 2 );
 		add_action( 'wp_ajax_set_blocks_items', array( $this, 'ajax_callback' ), 10 );
 		add_action( 'wp_ajax_nopriv_set_blocks_items', array( $this, 'ajax_callback' ), 10 );
+	}
+
+	/**
+	 * Change the status of pages using the Blocks Builder template as builder pages.
+	 *
+	 * @param bool $use_builder Whether or not this page will be a builder page.
+	 * @param bool $template    The template name.
+	 *
+	 * @return bool True if the page is using the Blocks Builder template.
+	 */
+	public function make_will_be_builder_page( $use_builder, $template ) {
+		if ( 'template-blocks-builder.php' === $template ) {
+			$use_builder = true;
+		}
+
+		return $use_builder;
 	}
 
 	/**
