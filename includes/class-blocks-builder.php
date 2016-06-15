@@ -44,7 +44,8 @@ class WSU_News_Blocks_Builder {
 	 */
 	public function setup_hooks() {
 		add_filter( 'make_will_be_builder_page', array( $this, 'make_will_be_builder_page' ), 10, 2 );
-		add_filter( 'make_is_builder_page', array( $this, 'make_is_builder_page'), 10, 2 );
+		add_filter( 'make_is_builder_page', array( $this, 'make_is_builder_page' ), 10, 2 );
+		add_filter( 'theme_page_templates', array( $this, 'blocks_builder_template_visiblity' ), 10, 1 );
 		add_action( 'admin_init', array( $this, 'set_post_types' ) );
 		add_action( 'admin_init', array( $this, 'set_post_types_taxonomies' ) );
 		add_action( 'admin_init', array( $this, 'custom_builder_sections' ) );
@@ -85,6 +86,21 @@ class WSU_News_Blocks_Builder {
 		}
 
 		return $is_builder_page;
+	}
+
+	/**
+	 * If builder functionality is not available, do not show the blocks builder template
+	 * on the list of available page templates.
+	 *
+	 * @param array $page_templates List of available page templates.
+	 *
+	 * @return array Modified list of page templates.
+	 */
+	public function blocks_builder_template_visiblity( $page_templates ) {
+		if ( false === apply_filters( 'spine_enable_builder_module', true ) ) {
+			unset( $page_templates['template-blocks-builder.php'] );
+		}
+		return $page_templates;
 	}
 
 	/**
