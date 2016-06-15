@@ -1,5 +1,5 @@
 /**
- * Handle various features required for the drag/drop layout builder.
+ * Handle various features required for the blocks layout builder.
  */
 (function ($, window) {
 	'use strict';
@@ -16,10 +16,11 @@
 	}
 
 	/**
-	 * Use jQuery UI Sortable to add sorting functionality to block layout builds.
+	 * Use jQuery UI Sortable to add sorting functionality to blocks builds.
 	 */
 	function sortable_layout() {
 		var item_column;
+
 		$('.wsuwp-spine-builder-column').sortable({
 			connectWith: '.wsuwp-spine-builder-column',
 			handle: '.ttfmake-sortable-handle',
@@ -30,13 +31,18 @@
 			},
 			stop: function (event, ui) {
 				var existing_item = ui.item.siblings('.wsuwp-blocks-item');
+
+				// If an item is being dropped into a column that already has an item, swap their locations.
 				if (existing_item && ui.item.parent('#wsuwp-blocks-items').length == 0) {
 					$(existing_item).appendTo(item_column).find('.wsuwp-blocks-item-body').css('display', '');
 				}
+
+				// Set the toggle state to closed for items being moved into the staging area.
 				if (ui.item.parent('#wsuwp-blocks-items').length == 1) {
 					ui.item.find('.handlediv').removeClass('wsuwp-toggle-closed');
 					ui.item.find('.wsuwp-blocks-item-body').css('display', '');
 				}
+
 				process_sorted_data();
 			}
 		});
@@ -50,7 +56,7 @@
 	function load_blocks_items(raw_data) {
 		var data = '';
 
-		// Append the results to the existing build of items.
+		// Load the results into the staging area.
 		$.each(raw_data, function (index, val) {
 			data += '<div id="wsuwp-blocks-item-' + val.id + '" class="wsuwp-blocks-item">' +
 				'<div class="ttfmake-sortable-handle" title="Drag-and-drop this post into place">' +
@@ -72,7 +78,7 @@
 	}
 
 	/**
-	 * As issue articles are sorted, process their associate information.
+	 * As items are sorted, process their associated information.
 	 */
 	function process_sorted_data() {
 		var new_val = '',
@@ -99,7 +105,6 @@
 		});
 
 		$('#wsuwp-blocks-staged-items').val(staged_items);
-
 	}
 
 	// Load items into the staging area.
@@ -112,26 +117,24 @@
 			u_category = $('[name="wsuwp_blocks_wsuwp_university_category[]"]:checked').map(function(){ return $(this).val(); }).get(),
 			location = $('[name="wsuwp_blocks_wsuwp_university_location[]"]:checked').map(function(){ return $(this).val(); }).get(),
 			organization = $('[name="wsuwp_blocks_wsuwp_university_org_terms[]"]:checked').map(function(){ return $(this).val(); }).get(),
-			relation = $('[name="wsuwp_blocks_term_relation"]:checked').val();
+			relation = $('[name="wsuwp_blocks_term_relation"]:checked').val(),
+			data = {
+				action: 'set_blocks_items',
+				post_type: post_type,
+				category: category,
+				tag: tag,
+				u_category: u_category,
+				location: location,
+				organization: organization,
+				relation: relation,
+			};
 
-		// Cache the issue build area for future use.
-		var data = {
-			action: 'set_blocks_items',
-			post_type: post_type,
-			category: category,
-			tag: tag,
-			u_category: u_category,
-			location: location,
-			organization: organization,
-			relation: relation,
-		};
-
-		// At least one post type needs to be selected.
+		// At least one post type needs to be selected to make the ajax call.
 		if ( 0 === $('[name="wsuwp_blocks_post_type[]"]:checked').length ) {
 			return;
 		}
 
-		// Make the ajax call
+		// Make the ajax call.
 		$.post(window.ajaxurl, data, function (response) {
 			var data = '',
 				response_data = $.parseJSON(response);
@@ -160,8 +163,10 @@
 		var link = $(this);
 
 		if ( link.hasClass('edit') ) {
+			// If the 'Edit' link is clicked, hide it and show the options div.
 			link.hide().next('div').slideDown('fast');
 		} else {
+			// Update the selected options and `.display` span text accordingly when 'Okay' or 'Cancel' is clicked.
 			var section = link.closest('.wsuwp-blocks-content-options'),
 				display = section.find('.display'),
 				options = link.closest('div');
@@ -170,6 +175,7 @@
 				var checked = options.find(':checked').map(function () { return $.trim($(this).closest('label').text()); }).get(),
 					text    = checked.length ? checked.join(', ') : 'None';
 
+				// When editing post type options, at least one needs to be selected before proceeding.
 				if ( section.hasClass('post-type') && 0 === options.find(':checked').length ) {
 					return;
 				}
@@ -183,12 +189,12 @@
 				$.each(checked, function (i, val) {
 					options.find('label').filter(function () {
 						return $(this).text() === ' ' + val;
-					}).find('input').attr('checked', true).triggerHandler('change');
+					}).find('input').attr('checked', true).triggerHandler('change'); // `triggerHandler` here to check post type options.
 				});
 			}
 
+			// Close the options div and show the 'Edit' link.
 			link.closest('div').slideUp('fast').prev('.edit').show();
-
 		}
 	});
 
@@ -205,7 +211,7 @@
 		}
 	});
 
-	// Taxonomy terms quick search.
+	// Taxonomy terms search.
 	$('.wsuwp-blocks-taxonomy-terms-search').on('keyup change', function () {
 		var	value = $(this).val(),
 			terms = $(this).next('.wsuwp-blocks-taxonomy-terms').find('label'); // Could add `:has(:not(:checked))` to preserve checked options.
@@ -226,7 +232,7 @@
 
 	});
 
-	// Display the builder and custom sections when the drag/drop builder template is selected.
+	// Display the builder and custom sections when the blocks builder template is selected.
 	$('#page_template').on('change', function () {
 		if ('template-blocks-builder.php' === $(this).val()) {
 			$('body').addClass('wsuwp-drag-drop');
@@ -250,15 +256,19 @@
 			return;
 		}
 
-		// We'll also need to remove the configuration modal input values (if we use any).
+		// Animate removal in the same manner as a page builder section.
 		$(this).closest('.wsuwp-blocks-item').animate({
 			opacity: 'toggle',
 			height: 'toggle'
 		}, oneApp.options.closeSpeed, function () {
+			// Remove any input values for the column the item was in.
+			$(this).siblings('input').val('');
+			// We'll also need to remove the configuration modal input values (if we use any).
 			$(this).remove();
 		});
 	});
 
+	// Fire the jQuery UI Sortable setup on page load.
 	$(document).ready(function () {
 		sortable_layout();
 	});
