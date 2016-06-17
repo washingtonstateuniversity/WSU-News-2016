@@ -357,9 +357,7 @@ class WSU_News_Blocks_Builder {
 				<?php foreach ( $this->post_types as $post_type ) { ?>
 				<?php $post_type = get_post_type_object( $post_type ); ?>
 				<?php $checked = ( in_array( $post_type->name, $post_type_meta ) ) ? ' checked="checked"': ''; ?>
-				<label>
-					<input type="checkbox" name="wsuwp_blocks_post_type[]" value="<?php echo $post_type->name; ?>"<?php echo $checked; ?>/> <?php echo $post_type->labels->name; ?>
-				</label><br />
+				<label><input type="checkbox" name="wsuwp_blocks_post_type[]" value="<?php echo $post_type->name; ?>"<?php echo $checked; ?>/> <?php echo $post_type->labels->name; ?></label><br />
 				<?php } ?>
 				<p>
 					<a href="#" class="hide-if-no-js button">OK</a>
@@ -379,12 +377,8 @@ class WSU_News_Blocks_Builder {
 				<span aria-hidden="true">Edit</span> <span class="screen-reader-text">Edit taxonomy query relation</span>
 			</a>
 			<div class="hide-if-js">
-				<label>
-					<input type="radio" name="wsuwp_blocks_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?>/> Any of the following
-				</label><br />
-				<label>
-					<input type="radio" name="wsuwp_blocks_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/> All of the following
-				</label><br />
+				<label><input type="radio" name="wsuwp_blocks_term_relation" value="OR"<?php checked( $relation, 'OR' ); ?>/> Any of the following</label><br />
+				<label><input type="radio" name="wsuwp_blocks_term_relation" value="AND"<?php checked( $relation, 'AND' ); ?>/> All of the following</label><br />
 				<p>
 					<a href="#" class="hide-if-no-js button">OK</a>
 					<a href="#" class="hide-if-no-js button-cancel">Cancel</a>
